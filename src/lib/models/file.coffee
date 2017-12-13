@@ -526,7 +526,7 @@ class FileModel extends Model
 	# @return {Object}
 	###
 	toJSON: (dereference=false) ->
-		data = super
+		data = super(dereference)
 		data.meta = @getMeta().toJSON()
 		data = extendr.dereferenceJSON(data)  if dereference is true
 		return data
@@ -871,7 +871,7 @@ class FileModel extends Model
 			throw new Error("Use docpad.createModel to create the file or document model")
 
 		# Create our action runner
-		@actionRunnerInstance = new @TaskGroup("file action runner", {abortOnError: false, destroyOnceDone: false}).whenDone (err) ->
+		@actionRunnerInstance = @TaskGroup("file action runner", {abortOnError: false, destroyOnceDone: false}).whenDone (err) ->
 			file.emit('error', err)  if err
 
 		# Apply
@@ -905,7 +905,7 @@ class FileModel extends Model
 		file.setBuffer(opts.buffer)    if opts.buffer?
 
 		# Tasks
-		tasks = new @TaskGroup("load tasks for file: #{filePath}", {next})
+		tasks = @TaskGroup("load tasks for file: #{filePath}", {next})
 			.on('item.run', (item) ->
 				file.log("debug", "#{item.getConfig().name}: #{file.type}: #{filePath}")
 			)

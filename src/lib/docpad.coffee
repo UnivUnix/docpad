@@ -282,7 +282,7 @@ class DocPad extends EventEmitterGrouped
 	# The plugin version requirements
 	# @property {String} pluginVersion
 	###
-	pluginVersion: '2'
+	pluginVersion: '3'
 
 	# Process getters
 	###*
@@ -1832,6 +1832,7 @@ class DocPad extends EventEmitterGrouped
 	constructor: (instanceConfig,next) ->
 		# Prepare
 		[instanceConfig,next] = extractOptsAndCallback(instanceConfig, next)
+		super(instanceConfig, next)
 		docpad = @
 
 		# Binders

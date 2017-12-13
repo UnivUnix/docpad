@@ -161,12 +161,12 @@
       ]
     },
     {
-      "description": "CoffeeScript Compiled JavaScript + ES5 + Require",
+      "description": "CoffeeScript Compiled JavaScript + ES2015 + Require",
       "entry": "lib/docpad.js",
       "directory": "out",
       "syntaxes": [
         "javascript",
-        "es5",
+        "es2015",
         "require"
       ]
     }
@@ -222,8 +222,8 @@
   },
   "devDependencies": {
     "assert-helpers": "^4.5.0",
-    "coffee-script": "^1.12.4",
-    "coffeelint": "^1.16.0",
+    "coffeescript": "^2.0.3",
+    "coffeelint": "^2.0.7",
     "docpad-plugin-coffeekup": "2",
     "docpad-plugin-eco": "2",
     "docpad-plugin-marked": "2",
@@ -232,35 +232,6 @@
     "moment": "^2.13.0",
     "projectz": "^1.3.2",
     "yuidocjs": "^0.10.1"
-  },
-  "editions": [
-    {
-      "description": "Source + CoffeeScript + Require",
-      "entry": "lib/docpad.coffee",
-      "directory": "src",
-      "syntaxes": [
-        "coffeescript",
-        "require"
-      ]
-    },
-    {
-      "description": "CoffeeScript Compiled JavaScript + ES5 + Require",
-      "entry": "lib/docpad.js",
-      "directory": "out",
-      "syntaxes": [
-        "javascript",
-        "es5",
-        "require"
-      ]
-    }
-  ],
-  "main": "out/lib/docpad.js",
-  "bin": {
-    "docpad": "bin/docpad",
-    "docpad-compile": "bin/docpad-compile",
-    "docpad-debug": "bin/docpad-debug",
-    "docpad-server": "bin/docpad-server",
-    "docpad-trace": "bin/docpad-trace"
   },
   "scripts": {
     "our:setup": "npm install",

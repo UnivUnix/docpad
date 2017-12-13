@@ -9,6 +9,9 @@ yarn.lock
 **/*.cpuprofile
 **/*.heapsnapshot
 
+# NPM package lock
+package-lock.json
+
 # Build Files
 build/
 components/

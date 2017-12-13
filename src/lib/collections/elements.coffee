@@ -57,9 +57,9 @@ class ElementsCollection extends Collection
 		@
 
 	# Chain
-	set: -> super; @
-	remove: -> super; @
-	reset: -> super; @
+	set: -> super(); @
+	remove: -> super(); @
+	reset: -> super(); @
 
 	###*
 	# Create a way to output our elements to HTML

@@ -194,8 +194,16 @@ class BasePlugin
 				# Apply the priority
 				eventHandlerPriority = pluginInstance[eventName+'Priority'] or pluginInstance.priority or null
 				eventHandler.priority ?= eventHandlerPriority
-				eventHandler.name = "#{pluginInstance.name}: {eventName}"
-				eventHandler.name += "(priority eventHandler.priority})"  if eventHandler.priority?
+				if eventHandler.priority?
+					Object.defineProperty(eventHandler, 'name', {
+						value: '#{pluginInstance.name}: {eventName}(priority eventHandler.priority})'
+						writable: true
+					})
+				else
+					Object.defineProperty(eventHandler, 'name', {
+						value: '#{pluginInstance.name}: {eventName}'
+						writable: true
+					})
 
 				# Wrap the event handler, and bind it to docpad
 				docpad
