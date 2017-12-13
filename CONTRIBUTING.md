@@ -1,5 +1,9 @@
 <!--
+<<<<<<< HEAD
 2017 January 27
+=======
+2016 October 4
+>>>>>>> origin/dev-updatedeps
 https://github.com/bevry/base
 -->
 
