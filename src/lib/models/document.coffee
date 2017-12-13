@@ -383,6 +383,9 @@ class DocumentModel extends FileModel
 	contextualize: (opts={},next) ->
 		# Prepare
 		[opts,next] = extractOptsAndCallback(opts,next)
+		console.log("Document.contextualize: -> opts:")
+		console.log(opts)
+		console.log("Document.contextualize: -> next:" + next)
 
 		# Get our highest ancestor
 		@getEve (err,eve) =>
@@ -548,7 +551,7 @@ class DocumentModel extends FileModel
 		return next(null, result)  if extensionsReversed.length <= 1
 
 		# Prepare the tasks
-		tasks = new @TaskGroup "renderExtensions: #{filePath}", next:(err) ->
+		tasks = @TaskGroup "renderExtensions: #{filePath}", next:(err) ->
 			# Forward with result
 			return next(err, result)
 
@@ -722,31 +725,34 @@ class DocumentModel extends FileModel
 		file.log 'debug', util.format(locale.documentRender, filePath)
 
 		# Prepare the tasks
-		tasks = new @TaskGroup "render tasks for: #{relativePath}", next:(err) ->
-			# Error?
-			if err
-				err.context = util.format(locale.documentRenderError, filePath)
-				return next(err, opts.content, file)
+		tasks = @TaskGroup({
+			name: 'render tasks for: #{relativePath}'
+			next:(err) ->
+				# Error?
+				if err
+					err.context = util.format(locale.documentRenderError, filePath)
+					return next(err, opts.content, file)
 
-			# Attributes
-			contentRendered = opts.content
-			contentRenderedWithoutLayouts ?= contentRendered
-			rendered = true
-			file.set({contentRendered, contentRenderedWithoutLayouts, rendered})
+				# Attributes
+				contentRendered = opts.content
+				contentRenderedWithoutLayouts ?= contentRendered
+				rendered = true
+				file.set({contentRendered, contentRenderedWithoutLayouts, rendered})
 
-			# Log
-			file.log 'debug', util.format(locale.documentRendered, filePath)
+				# Log
+				file.log 'debug', util.format(locale.documentRendered, filePath)
 
-			# Apply
-			file.attributes.rtime = new Date()
+				# Apply
+				file.attributes.rtime = new Date()
 
-			# Success
-			return next(null, opts.content, file)
-			# ^ do not use super here, even with =>
-			# as it causes layout rendering to fail
-			# the reasoning for this is that super uses the document's contentRendered
-			# where, with layouts, opts.apply is false
-			# so that isn't set
+				# Success
+				return next(null, opts.content, file)
+				# ^ do not use super here, even with =>
+				# as it causes layout rendering to fail
+				# the reasoning for this is that super uses the document's contentRendered
+				# where, with layouts, opts.apply is false
+				# so that isn't set
+		})
 
 		# Render Extensions Task
 		if 'renderExtensions' in opts.actions

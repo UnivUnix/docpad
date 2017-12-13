@@ -1,6 +1,8 @@
 # History
 
-<<<<<<< HEAD
+## v7.0.0 2017 December 13
+- PROJECT SEVEN (Alpha)
+
 ## v6.79.4 2017 March 31
 - Fixed DocPad having stdin errors on exit under certain circumstances
    - Thanks to [Craig Smith](https://github.com/craigsssmith) for [issue #1049](https://github.com/docpad/docpad/pull/1049)

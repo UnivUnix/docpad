@@ -294,6 +294,10 @@ module.exports = docpadUtil =
 		locale = me.getLocale()
 		run = opts.run ? true
 		runner = opts.runner ? me.getActionRunner()
+		console.log("Util.action: -> action:" + action)
+		console.log("Util.action: -> opts:")
+		console.log(opts)
+		console.log("Util.action: -> next:" + next)
 
 		# Array?
 		if Array.isArray(action)

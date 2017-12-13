@@ -5125,6 +5125,9 @@ class DocPad extends EventEmitterGrouped
 	loadDocument: (document,opts,next) ->
 		# Prepare
 		[opts,next] = extractOptsAndCallback(opts,next)
+		console.log("Docpad.loadDoc: -> opts:")
+		console.log(opts)
+		console.log("Docpad.loadDoc: -> next:" + next)
 
 		# Load
 		# @TODO: don't load if already loaded
@@ -5170,6 +5173,9 @@ class DocPad extends EventEmitterGrouped
 	renderDocument: (document,opts,next) ->
 		# Prepare
 		[opts,next] = extractOptsAndCallback(opts,next)
+		console.log("Docpad.renderDoc: -> opts:")
+		console.log(opts)
+		console.log("Docpad.renderDoc: -> next:" + next)
 
 		# Render
 		clone = document.clone().action 'render', opts, (err) ->
@@ -5282,6 +5288,10 @@ class DocPad extends EventEmitterGrouped
 		# Prepare
 		[opts,next] = extractOptsAndCallback(opts,next)
 		locale = @getLocale()
+
+		console.log("Docpad.render: -> opts:")
+		console.log(opts)
+		console.log("Docpad.render: -> next:" + next)
 
 		# Extract document
 		if opts.document
