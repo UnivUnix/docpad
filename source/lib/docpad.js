@@ -12,53 +12,53 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-//#*
+//
 // The central module for DocPad
 // @module DocPad
-//#
+//
 
 // =====================================
 // This block *must* come first
 
 // Node 0.10 compat
-require('babel-polyfill');
+import * as babelPolyfill from "babel-polyfill";
 
-// Important
-const pathUtil = require('path');
-const lazyRequire = require('lazy-require');
+// !! Important !!
+import * as pathUtil from "path";
+import * as lazyRequire from "lazy-require";
+
 const corePath = pathUtil.resolve(__dirname, '..', '..');
-
 
 // =====================================
 // Requires
 
 // Standard Library
-const util     = require('util');
+import * as util from "util";
 
 // External
-const queryEngine = require('query-engine');
-const {uniq, union, pick} = require('underscore');
-const CSON = require('cson');
-const balUtil = require('bal-util');
-const scandir = require('scandirectory');
-const extendr = require('extendr');
-const eachr = require('eachr');
-const typeChecker = require('typechecker');
-const ambi = require('ambi');
-const {TaskGroup} = require('taskgroup');
-const safefs = require('safefs');
-const safeps = require('safeps');
-const ignorefs = require('ignorefs');
-const rimraf = require('rimraf');
-const superAgent = require('superagent');
-const extractOptsAndCallback = require('extract-opts');
-const {EventEmitterGrouped} = require('event-emitter-grouped');
+import * as queryEngine from "query-engine";
+import {uniq, union, pick} from "underscore";
+import * as CSON from "cson";
+import * as balUtil from "bal-util";
+import * as scandir from "scandirectory";
+import * as extendr from "extendr";
+import * as eachr from "eachr";
+import * as typeChecker from "typechecker";
+import * as ambi from "ambi";
+import TaskGroup from "taskgroup";
+import * as safefs from "safefs";
+import * as safeps from "safeps";
+import * as ignorefs from "ignorefs";
+import * as rimraf from "rimraf";
+import * as superAgent from "superagent";
+import * as extractOptsAndCallback from "extract-opts";
+import EventEmitterGrouped from "event-emitter-grouped";
 
 // Base
-const {Events,Model,Collection,QueryCollection} = require('./base');
+import {Events,Model,Collection,QueryCollection} from "./base";
 
 // Utils
-const docpadUtil = require('./util');
+import DocpadUtil from "./util";
 
 // Models
 const FileModel = require('./models/file');

@@ -18,6 +18,10 @@ import * as util from "util";
 // External
 import {uniq, compact} from "underscore";
 import * as extractOptsAndCallback from "extract-opts";
+import * as safeps from "safeps";
+import * as safefs from "safefs";
+import * as typeChecker from "typechecker";
+import * as balUtil from "bal-util";
 
 // =====================================
 // Export
@@ -28,7 +32,7 @@ import * as extractOptsAndCallback from "extract-opts";
  * @constructor
  * @static
  */
-export class docpadUtil {
+export class DocpadUtil {
 	/**
 	 * Write to stderr
 	 * @private
@@ -186,8 +190,8 @@ export class docpadUtil {
 	 * @return {Boolean}
 	 */
 	getLocalDocPadExecutableExistance() {
-		return require('safefs').existsSync(docpadUtil.getLocalDocPadExecutable()) === true;
-	},
+		return safefs.existsSync(this.LocalDocPadExecutable) === true;
+	}
 
 	/**
 	 * Spawn Local DocPad Executable
@@ -198,20 +202,21 @@ export class docpadUtil {
 	 */
 	startLocalDocPadExecutable(next) {
 		const args = process.argv.slice(2);
-		const command = ['node', docpadUtil.getLocalDocPadExecutable()].concat(args);
-		return require('safeps').spawn(command, {stdio:'inherit'}, function(err) {
+		const command = ['node', this.getLocalDocPadExecutable()].concat(args);
+		const docpadUtil = this;
+		return safeps.spawn(command, {stdio:'inherit'}, (err) => {
 			if (err) {
 				if (next) {
-					return next(err);
+					next(err);
 				} else {
 					const message = `An error occured within the child DocPad instance: ${err.message}\n`;
-					return docpadUtil.writeStderr(message);
+					docpadUtil.writeStderr(message);
 				}
 			} else {
-				return (typeof next === 'function' ? next() : undefined);
+				(typeof next === 'function')? next() : undefined;
 			}
 		});
-	},
+	}
 
 
 	/**
@@ -228,7 +233,7 @@ export class docpadUtil {
 			basename = filename.replace(/\..*$/, '');
 		}
 		return basename;
-	},
+	}
 
 
 	/**
@@ -237,10 +242,10 @@ export class docpadUtil {
 	 * @param {String} filename
 	 * @return {Array} array of string
 	 */
-	getExtensions(filename) {
+	getextensions(filename) {
 		const extensions = filename.split(/\./g).slice(1);
 		return extensions;
-	},
+	}
 
 
 	/**
@@ -251,8 +256,8 @@ export class docpadUtil {
 	 */
 	getExtension(extensions) {
 		let extension;
-		if (!require('typechecker').isArray(extensions)) {
-			extensions = docpadUtil.getExtensions(extensions);
+		if (!typeChecker.isArray(extensions)) {
+			extensions = this.getExtensions(extensions);
 		}
 
 		if (extensions.length !== 0) {
@@ -262,7 +267,7 @@ export class docpadUtil {
 		}
 
 		return extension;
-	},
+	}
 
 	/**
 	 * Get the directory path.
@@ -273,7 +278,7 @@ export class docpadUtil {
 	 */
 	getDirPath(path) {
 		return pathUtil.dirname(path) || '';
-	},
+	}
 
 	/**
 	 * Get the file name.
@@ -284,7 +289,7 @@ export class docpadUtil {
 	 */
 	getFilename(path) {
 		return pathUtil.basename(path);
-	},
+	}
 
 	/**
 	 * Get the DocPad out file name
@@ -299,7 +304,7 @@ export class docpadUtil {
 		} else {
 			return basename+(extension ? `.${extension}` : '');
 		}
-	},
+	}
 
 	/**
 	 * Get the URL
@@ -309,7 +314,7 @@ export class docpadUtil {
 	 */
 	getUrl(relativePath) {
 		return `/${relativePath.replace(/[\\]/g, '/')}`;
-	},
+	}
 
 	/**
 	 * Get the post slug from the URL
@@ -318,8 +323,8 @@ export class docpadUtil {
 	 * @return {String} the slug
 	 */
 	getSlug(relativeBase) {
-		return require('bal-util').generateSlugSync(relativeBase);
-	},
+		return balUtil.generateSlugSync(relativeBase);
+	}
 
 	/**
 	 * Perform an action
@@ -335,7 +340,7 @@ export class docpadUtil {
 	action(action,opts,next) {
 		// Prepare
 		let actionMethod, actions, actionTaskOrGroup, err;
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
+		[opts,next] = extractOptsAndCallback(opts,next);
 		const me = this;
 		const locale = me.getLocale();
 		const run = opts.run != null ? opts.run : true;
@@ -365,7 +370,7 @@ export class docpadUtil {
 		if (actions.length > 1) {
 			actionTaskOrGroup = runner.createTaskGroup(`actions bundle: ${actions.join(' ')}`);
 
-			for (action of Array.from(actions)) {
+			for (action of actions) {
 				// Fetch
 				actionMethod = me[action].bind(me);
 
@@ -399,17 +404,17 @@ export class docpadUtil {
 		}
 
 		// Create our runner task
-		const runnerTask = runner.createTask(`runner task for action: ${action}`, function(continueWithRunner) {
+		const runnerTask = runner.createTask(`runner task for action: ${action}`, (continueWithRunner) => {
 			// Add our listener for our action
-			actionTaskOrGroup.done(function(...args) {
+			actionTaskOrGroup.done((...args) => {
 				// If we have a completion callback, let it handle the error
 				if (next) {
-					next(...Array.from(args || []));
+					next(...args);
 					args[0] = null;
 				}
 
 				// Continue with our runner
-				return continueWithRunner(...Array.from(args || []));
+				return continueWithRunner(...args);
 			});
 
 			// Run our action
@@ -423,4 +428,4 @@ export class docpadUtil {
 		// Chain
 		return me;
 	}
-});
+}
