@@ -152,21 +152,21 @@
   },
   "editions": [
     {
-      "description": "Source + CoffeeScript + Require",
-      "entry": "lib/docpad.coffee",
-      "directory": "src",
+      "description": "Source + ES6",
+      "entry": "lib/docpad.js",
+      "directory": "source",
       "syntaxes": [
-        "coffeescript",
-        "require"
+        "javascript",
+        "es6"
       ]
     },
     {
-      "description": "CoffeeScript Compiled JavaScript + ES2015 + Require",
+      "description": "Source compiled using Babel + ES5 + Require",
       "entry": "lib/docpad.js",
-      "directory": "out",
+      "directory": "es5",
       "syntaxes": [
         "javascript",
-        "es2015",
+        "es5",
         "require"
       ]
     }
@@ -178,11 +178,11 @@
     "docpad-server": "bin/docpad-server",
     "docpad-trace": "bin/docpad-trace"
   },
-  "main": "out/lib/docpad.js",
+  "main": "es5/lib/docpad.js",
   "dependencies": {
     "ambi": "^2.5.0",
     "babel-polyfill": "^6.9.1",
-    "backbone": "1.3.3",
+    "backbone": "^1.3.3",
     "bal-util": "~2.6.0",
     "caterpillar": "^3.0.0",
     "caterpillar-filter": "^3.0.0",
@@ -194,7 +194,7 @@
     "encoding": "~0.1.12",
     "envfile": "^2.1.1",
     "event-emitter-grouped": "^2.5.0",
-    "express": "^3.21.2",
+    "express": "^4.16.2",
     "extendr": "^3.2.0",
     "extract-opts": "^3.3.1",
     "getmac": "^1.2.1",
@@ -222,11 +222,12 @@
   },
   "devDependencies": {
     "assert-helpers": "^4.5.0",
-    "coffeescript": "^2.1.0",
-    "coffeelint": "^2.0.7",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "docpad-plugin-coffeekup": "2",
     "docpad-plugin-eco": "2",
     "docpad-plugin-marked": "2",
+    "eslint": "^4.13.1",
     "joe": "2.0.2",
     "joe-reporter-console": "2.0.1",
     "moment": "^2.19.4",
@@ -235,14 +236,14 @@
   },
   "scripts": {
     "our:setup": "npm install",
-    "our:clean": "rm -Rf ./docs ./es2015 ./out",
-    "our:compile": "npm run our:compile:coffeescript",
-    "our:compile:coffeescript": "coffee -bco ./out ./src",
+    "our:clean": "rm -Rf ./docs ./es5",
+    "our:compile": "npm run our:compile:babel",
+    "our:compile:babel": "babel ./source --out-dir es5/",
     "our:meta": "npm run our:meta:docs && npm run our:meta:projectz",
     "our:meta:docs": "yuidoc -o ./docs --syntaxtype coffee -e .coffee ./src",
     "our:meta:projectz": "projectz compile",
-    "our:verify": "npm run our:verify:coffeelint",
-    "our:verify:coffeelint": "coffeelint ./src",
+    "our:verify": "npm run our:verify:eslint",
+    "our:verify:eslint": "eslint ./source",
     "our:test": "npm run our:verify && npm test",
     "our:release": "npm run our:release:prepare && npm run our:release:check && npm run our:release:tag && npm run our:release:push",
     "our:release:prepare": "npm run our:clean && npm run our:compile && npm run our:test && npm run our:meta",
@@ -251,7 +252,7 @@
     "our:release:check:dirty": "git diff --exit-code",
     "our:release:tag": "export MESSAGE=$(cat ./HISTORY.md | sed -n \"/## v$npm_package_version/,/##/p\" | sed 's/## //' | awk 'NR>1{print buf}{buf = $0}') && test \"$MESSAGE\" || (echo 'proper changelog entry not found' && exit -1) && git tag v$npm_package_version -am \"$MESSAGE\"",
     "our:release:push": "git push origin master && git push origin --tags",
-    "test": "node --harmony ./out/test/everything-test.js --joe-reporter=console"
+    "test": "node --harmony ./es5/test/everything-test.js --joe-reporter=console"
   },
   "installUrl": "https://docpad.org/install",
   "upgradeUrl": "https://docpad.org/upgrade"
