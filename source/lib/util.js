@@ -299,11 +299,12 @@ export class DocpadUtil {
 	 * @param {String} extension
 	 * @return {String}
 	 */
-	getOutFilename(basename, extension) {
+	static getOutFilename (basename, extension) {
 		if (basename === (`.${extension}`)) {  // prevent: .htaccess.htaccess
-			return basename;
-		} else {
-			return basename+(extension ? `.${extension}` : '');
+			return basename
+		}
+		else {
+			return basename + (extension ? `.${extension}` : '')
 		}
 	}
 
@@ -313,8 +314,8 @@ export class DocpadUtil {
 	 * @param {String} relativePath
 	 * @return {String}
 	 */
-	getUrl(relativePath) {
-		return `/${relativePath.replace(/[\\]/g, '/')}`;
+	static getUrl (relativePath) {
+		return `/${relativePath.replace(/[\\]/g, '/')}`
 	}
 
 	/**
@@ -323,8 +324,8 @@ export class DocpadUtil {
 	 * @param {String} relativeBase
 	 * @return {String} the slug
 	 */
-	getSlug(relativeBase) {
-		return balUtil.generateSlugSync(relativeBase);
+	static getSlug (relativeBase) {
+		return balUtil.generateSlugSync(relativeBase)
 	}
 
 	/**
@@ -337,71 +338,74 @@ export class DocpadUtil {
 	 * @param {Object} action
 	 * @param {Object} opts
 	 * @param {Function} next
+	 * @returns {Object} The class instance itself
 	 */
-	action(action,opts,next) {
+	static action (action, opts, next) {
 		// Prepare
 		let actionMethod, actions, actionTaskOrGroup, err;
-		[opts,next] = extractOptsAndCallback(opts,next);
-		const me = this;
-		const locale = me.getLocale();
-		const run = opts.run != null ? opts.run : true;
-		const runner = opts.runner != null ? opts.runner : me.getActionRunner();
-		console.log(`Util.action: -> action:${action}`);
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const locale = DocpadUtil.getLocale()
+		const run = opts.run != null ? opts.run : true
+		const runner = opts.runner != null ? opts.runner : DocpadUtil.getActionRunner()
+
+		/* console.log(`Util.action: -> action:${action}`);
 		console.log("Util.action: -> opts:");
 		console.log(opts);
-		console.log(`Util.action: -> next:${next}`);
+		console.log(`Util.action: -> next:${next}`);*/
 
 		// Array?
 		if (Array.isArray(action)) {
-			actions = action;
-		} else {
-			actions = action.split(/[,\s]+/g);
+			actions = action
+		}
+		else {
+			actions = action.split(/[,\s]+/g)
 		}
 
 		// Clean actions
-		actions = uniq(compact(actions));
+		actions = uniq(compact(actions))
 
 		// Exit if we have no actions
 		if (actions.length === 0) {
-			err = new Error(locale.actionEmpty);
-			return next(err); me;
+			err = new Error(locale.actionEmpty)
+			return next(err)
 		}
 
 		// We have multiple actions
 		if (actions.length > 1) {
-			actionTaskOrGroup = runner.createTaskGroup(`actions bundle: ${actions.join(' ')}`);
+			actionTaskOrGroup = runner.createTaskGroup(`actions bundle: ${actions.join(' ')}`)
 
 			for (action of actions) {
 				// Fetch
-				actionMethod = me[action].bind(me);
+				actionMethod = DocpadUtil[action].bind(DocpadUtil)
 
 				// Check
 				if (!actionMethod) {
-					err = new Error(util.format(locale.actionNonexistant, action));
-					return next(err); me;
+					err = new Error(util.format(locale.actionNonexistant, action))
+					return next(err)
 				}
 
 				// Task
-				const task = actionTaskOrGroup.createTask(action, actionMethod, {args: [opts]});
-				actionTaskOrGroup.addTask(task);
+				const task = actionTaskOrGroup.createTask(action, actionMethod, {args: [opts]})
+				actionTaskOrGroup.addTask(task)
 			}
 
 		// We have single actions
-		} else {
+		}
+		else {
 			// Fetch the action
-			action = actions[0];
+			action = actions[0]
 
 			// Fetch
-			actionMethod = me[action].bind(me);
+			actionMethod = DocpadUtil[action].bind(DocpadUtil)
 
 			// Check
 			if (!actionMethod) {
-				err = new Error(util.format(locale.actionNonexistant, action));
-				return next(err); me;
+				err = new Error(util.format(locale.actionNonexistant, action))
+				return next(err)
 			}
 
 			// Task
-			actionTaskOrGroup = runner.createTask(action, actionMethod, {args: [opts]});
+			actionTaskOrGroup = runner.createTask(action, actionMethod, {args: [opts]})
 		}
 
 		// Create our runner task
@@ -410,23 +414,25 @@ export class DocpadUtil {
 			actionTaskOrGroup.done((...args) => {
 				// If we have a completion callback, let it handle the error
 				if (next) {
-					next(...args);
-					args[0] = null;
+					next(...args)
+					args[0] = null
 				}
 
 				// Continue with our runner
-				return continueWithRunner(...args);
-			});
+				continueWithRunner(...args)
+			})
 
 			// Run our action
-			return actionTaskOrGroup.run();
-		});
+			actionTaskOrGroup.run()
+		})
 
 		// Add it and run it
-		runner.addTask(runnerTask);
-		if (run === true) { runner.run(); }
+		runner.addTask(runnerTask)
+		if (run === true) {
+			runner.run()
+		}
 
 		// Chain
-		return me;
+		return DocpadUtil
 	}
 }

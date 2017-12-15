@@ -21,71 +21,71 @@
 // This block *must* come first
 
 // Node 0.10 compat
-import * as babelPolyfill from "babel-polyfill";
+import * as babelPolyfill from 'babel-polyfill'
 
 // !! Important !!
-import * as pathUtil from "path";
-import * as lazyRequire from "lazy-require";
+import * as pathUtil from 'path'
+import * as lazyRequire from 'lazy-require'
 
-const corePath = pathUtil.resolve(__dirname, '..', '..');
+const corePath = pathUtil.resolve(__dirname, '..', '..')
 
 // =====================================
 // Requires
 
 // Standard Library
-import * as util from "util";
+import * as util from 'util'
 
 // External
-import * as queryEngine from "query-engine";
-import {uniq, union, pick} from "underscore";
-import * as CSON from "cson";
-import * as balUtil from "bal-util";
-import * as scandir from "scandirectory";
-import * as extendr from "extendr";
-import * as eachr from "eachr";
-import * as typeChecker from "typechecker";
-import * as ambi from "ambi";
-import TaskGroup from "taskgroup";
-import * as safefs from "safefs";
-import * as safeps from "safeps";
-import * as ignorefs from "ignorefs";
-import * as rimraf from "rimraf";
-import * as superAgent from "superagent";
-import * as extractOptsAndCallback from "extract-opts";
-import EventEmitterGrouped from "event-emitter-grouped";
+import * as queryEngine from 'query-engine'
+import {uniq, union, pick} from 'underscore'
+import * as CSON from 'cson'
+import * as balUtil from 'bal-util'
+import * as scandir from 'scandirectory'
+import * as extendr from 'extendr'
+import * as eachr from 'eachr'
+import * as typeChecker from 'typechecker'
+import * as ambi from 'ambi'
+import TaskGroup from 'taskgroup'
+import * as safefs from 'safefs'
+import * as safeps from 'safeps'
+import * as ignorefs from 'ignorefs'
+import * as rimraf from 'rimraf'
+import * as superAgent from 'superagent'
+import * as extractOptsAndCallback from 'extract-opts'
+import EventEmitterGrouped from 'event-emitter-grouped'
 
 // Base
-import {Events,Model,Collection,QueryCollection} from "./base";
+import {Events, Model, Collection, QueryCollection} from './base'
 
 // Utils
-import DocpadUtil from "./util";
+import DocpadUtil from './util'
 
 // Models
-import FileModel from "./models/file";
-const DocumentModel = require('./models/document');
+import FileModel from './models/file'
+const DocumentModel = require('./models/document')
 
 // Collections
-const FilesCollection = require('./collections/files');
-const ElementsCollection = require('./collections/elements');
-const MetaCollection = require('./collections/meta');
-const ScriptsCollection = require('./collections/scripts');
-const StylesCollection = require('./collections/styles');
+const FilesCollection = require('./collections/files')
+const ElementsCollection = require('./collections/elements')
+const MetaCollection = require('./collections/meta')
+const ScriptsCollection = require('./collections/scripts')
+const StylesCollection = require('./collections/styles')
 
 // Plugins
-const PluginLoader = require('./plugin-loader');
-const BasePlugin = require('./plugin');
+const PluginLoader = require('./plugin-loader')
+const BasePlugin = require('./plugin')
 
 
 // ---------------------------------
 // Helpers
 
-const setImmediate = (typeof global !== 'undefined' && global !== null ? global.setImmediate : undefined) || process.nextTick;  // node 0.8 b/c
+const setImmediate = (typeof global !== 'undefined' && global !== null ? global.setImmediate : null) || process.nextTick  // node 0.8 b/c
 
 
 // ---------------------------------
 // Variables
 
-const isUser = docpadUtil.isUser();
+const isUser = DocpadUtil.isUser()
 
 
 /**
@@ -114,7 +114,7 @@ const isUser = docpadUtil.isUser();
  * @constructor
  * @extends EventEmitterGrouped
  */
-class DocPad extends EventEmitterGrouped {
+export class DocPad extends EventEmitterGrouped {
 	static initClass() {
 	
 	
@@ -7237,22 +7237,3 @@ module.exports = docpadConfig\
 	}
 }
 DocPad.initClass();
-
-
-// ---------------------------------
-// Export
-
-module.exports = DocPad;
-
-function __range__(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
-  }
-  return range;
-}
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}
