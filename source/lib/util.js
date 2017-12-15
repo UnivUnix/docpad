@@ -198,22 +198,23 @@ export class DocpadUtil {
 	 * @param {Function} next
 	 * @return {Object} don't know what
 	 */
-	startLocalDocPadExecutable(next) {
-		const args = process.argv.slice(2);
-		const command = ['node', this.getLocalDocPadExecutable()].concat(args);
-		const docpadUtil = this;
-		return safeps.spawn(command, {stdio:'inherit'}, (err) => {
+	static startLocalDocPadExecutable (next) {
+		const args = process.argv.slice(2)
+		const command = ['node', DocpadUtil.getLocalDocPadExecutable()].concat(args)
+		return safeps.spawn(command, {stdio: 'inherit'}, (err) => {
 			if (err) {
 				if (next) {
-					next(err);
-				} else {
-					const message = `An error occured within the child DocPad instance: ${err.message}\n`;
-					docpadUtil.writeStderr(message);
+					next(err)
 				}
-			} else {
-				(typeof next === 'function')? next() : undefined;
+				else {
+					const message = `An error occured within the child DocPad instance: ${err.message}\n`
+					DocpadUtil.writeStderr(message)
+				}
 			}
-		});
+			else if (typeof next === 'function') {
+				next()
+			}
+		})
 	}
 
 
@@ -223,14 +224,15 @@ export class DocpadUtil {
 	 * @param {String} filename
 	 * @return {String} base name
 	 */
-	getBasename(filename) {
-		let basename;
+	static getBasename (filename) {
+		let basename
 		if (filename[0] === '.') {
-			basename = filename.replace(/^(\.[^\.]+)\..*$/, '$1');
-		} else {
-			basename = filename.replace(/\..*$/, '');
+			basename = filename.replace(/^(\.[^.]+)\..*$/, '$1')
 		}
-		return basename;
+		else {
+			basename = filename.replace(/\..*$/, '')
+		}
+		return basename
 	}
 
 
@@ -240,9 +242,9 @@ export class DocpadUtil {
 	 * @param {String} filename
 	 * @return {Array} array of string
 	 */
-	getextensions(filename) {
-		const extensions = filename.split(/\./g).slice(1);
-		return extensions;
+	static getExtensions (filename) {
+		const extensions = filename.split(/\./g).slice(1)
+		return extensions
 	}
 
 
@@ -252,19 +254,20 @@ export class DocpadUtil {
 	 * @param {Array} extensions
 	 * @return {String} the extension
 	 */
-	getExtension(extensions) {
-		let extension;
+	static getExtension (extensions) {
+		let extension
 		if (!typeChecker.isArray(extensions)) {
-			extensions = this.getExtensions(extensions);
+			extensions = DocpadUtil.getExtensions(extensions)
 		}
 
 		if (extensions.length !== 0) {
-			extension = extensions.slice(-1)[0] || null;
-		} else {
-			extension = null;
+			extension = extensions.slice(-1)[0] || null
+		}
+		else {
+			extension = null
 		}
 
-		return extension;
+		return extension
 	}
 
 	/**
@@ -274,8 +277,8 @@ export class DocpadUtil {
 	 * @param {String} path
 	 * @return {String}
 	 */
-	getDirPath(path) {
-		return pathUtil.dirname(path) || '';
+	static getDirPath (path) {
+		return pathUtil.dirname(path) || ''
 	}
 
 	/**
@@ -285,8 +288,8 @@ export class DocpadUtil {
 	 * @param {String} path
 	 * @return {String}
 	 */
-	getFilename(path) {
-		return pathUtil.basename(path);
+	static getFilename (path) {
+		return pathUtil.basename(path)
 	}
 
 	/**

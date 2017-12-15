@@ -228,6 +228,7 @@
     "docpad-plugin-eco": "2",
     "docpad-plugin-marked": "2",
     "eslint": "^4.13.1",
+    "eslint-plugin-security": "^1.4.0",
     "joe": "2.0.2",
     "joe-reporter-console": "2.0.1",
     "moment": "^2.19.4",
