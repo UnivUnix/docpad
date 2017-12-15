@@ -1,27 +1,17 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS103: Rewrite code to no longer use __guard__
- * DS104: Avoid inline assignments
- * DS204: Change includes calls to have a more natural evaluation order
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 // =====================================
 // Requires
 
 // Standard Library
-import * as pathUtil from "path";
-import * as util from "util";
+import * as pathUtil from 'path'
+import * as util from 'util'
 
 // External
-import {uniq, compact} from "underscore";
-import * as extractOptsAndCallback from "extract-opts";
-import * as safeps from "safeps";
-import * as safefs from "safefs";
-import * as typeChecker from "typechecker";
-import * as balUtil from "bal-util";
+import {uniq, compact} from 'underscore'
+import * as extractOptsAndCallback from 'extract-opts'
+import * as safeps from 'safeps'
+import * as safefs from 'safefs'
+import * as typeChecker from 'typechecker'
+import * as balUtil from 'bal-util'
 
 // =====================================
 // Export
@@ -38,12 +28,14 @@ export class DocpadUtil {
 	 * @private
 	 * @method writeStderr
 	 * @param {String} data
+	 * @returns {null}
 	 */
-	writeStderr(data) {
+	static writeStderr (data) {
 		try {
-			process.stderr.write(data);
-		} catch (err) {
-			process.stdout.write(data);
+			process.stderr.write(data)
+		}
+		catch (err) {
+			process.stdout.write(data)
 		}
 	}
 
@@ -52,12 +44,14 @@ export class DocpadUtil {
 	 * @private
 	 * @method writeError
 	 * @param {Object} err
+	 * @returns {null}
 	 */
-	writeError(err) {
+	static writeError (err) {
 		try {
-			this.writeStderr(err.stack.toString());
-		} catch (e) {
-			this.writeStderr(err.message || err);
+			DocpadUtil.writeStderr(err.stack.toString())
+		}
+		catch (e) {
+			DocpadUtil.writeStderr(err.message || err)
 		}
 	}
 
@@ -67,9 +61,10 @@ export class DocpadUtil {
 	 * @method wait
 	 * @param {Number} time
 	 * @param {function} fn
+	 * @returns {null}
 	 */
-	wait(time, fn) {
-		return setTimeout(fn, time);
+	static wait (time, fn) {
+		setTimeout(fn, time)
 	}
 
 	/**
@@ -78,11 +73,12 @@ export class DocpadUtil {
 	 * @method getDefaultLogLevel
 	 * @return {Number} default log level
 	 */
-	get defaultLogLevel() {
-		if (docpadUtil.flagTravis || (process.argv.includes('-d'))) {
-			return 7;
-		} else {
-			return 5;
+	static getDefaultLogLevel () {
+		if (DocpadUtil.getFlagTravis() || (process.argv.includes('-d'))) {
+			return 7
+		}
+		else {
+			return 5
 		}
 	}
 
@@ -92,8 +88,8 @@ export class DocpadUtil {
 	 * @method flagTravis
 	 * @return {Boolean}
 	 */
-	get flagTravis() {
-		return (process.env.TRAVIS_NODE_VERSION != null);
+	static getFlagTravis () {
+		return (process.env.TRAVIS_NODE_VERSION != null)
 	}
 
 	/**
@@ -102,8 +98,8 @@ export class DocpadUtil {
 	 * @method flagTTY
 	 * @return {Boolean}
 	 */
-	get flagTTY() {
-		return ((process.stdout != null ? process.stdout.isTTY : undefined) === true) && ((process.stderr != null ? process.stderr.isTTY : undefined) === true);
+	static getFlagTTY () {
+		return ((process.stdout != null ? process.stdout.isTTY : null) === true) && ((process.stderr != null ? process.stderr.isTTY : null) === true)
 	}
 
 	/**
@@ -112,8 +108,8 @@ export class DocpadUtil {
 	 * @method flagStandalone
 	 * @return {Object}
 	 */
-	get flagStandalone() {
-		return /docpad$/.test(process.argv[1] || '');
+	static getFlagStandalone () {
+		return (/docpad$/).test(process.argv[1] || '')
 	}
 
 	/**
@@ -122,8 +118,8 @@ export class DocpadUtil {
 	 * @method flagUser
 	 * @return {Boolean}
 	 */
-	get flagUser() {
-		return this.flagStandalone && this.flagTTY && (this.flagTravis === false);
+	static getFlagUser () {
+		return DocpadUtil.getFlagStandalone() && this.flagTTY && (DocpadUtil.getFlagTravis() === false)
 	}
 
 	/**
@@ -133,21 +129,23 @@ export class DocpadUtil {
 	 * @param {Object} opts
 	 * @return {String}
 	 */
-	inspect(obj, opts={}) {
+	static inspect (obj, opts = {}) {
 		// If the terminal supports colours, and the user hasn't set anything, then default to a sensible default
-		if(docpadUtil.flagTTY) {
-			if(!process.argv.includes('--no-colors')) {
-				opts.colors = true;
-			} else {
-				opts.colors = false;
+		if (DocpadUtil.getFlagTTY()) {
+			if (!process.argv.includes('--no-colors')) {
+				opts.colors = true
+			}
+			else {
+				opts.colors = false
 			}
 		// If the terminal doesn't support colours, then over-write whatever the user set
-		} else {
-			opts.colors = false;
+		}
+		else {
+			opts.colors = false
 		}
 
 		// Inspect and return
-		return util.inspect(obj, opts);
+		return util.inspect(obj, opts)
 	}
 
 	/**
@@ -157,8 +155,8 @@ export class DocpadUtil {
 	 * @param {String} encoding
 	 * @return {Boolean}
 	 */
-	getFlagStandardEncoding(encoding) {
-		return (['ascii', 'utf8', 'utf-8'].includes(encoding.toLowerCase()));
+	static getFlagStandardEncoding (encoding) {
+		return (['ascii', 'utf8', 'utf-8'].includes(encoding.toLowerCase()))
 	}
 
 
@@ -166,21 +164,21 @@ export class DocpadUtil {
 	 * Get Local DocPad Installation Executable - ie
 	 * not the global installation
 	 * @private
-	 * @method localDocPadExecutable
+	 * @method getLocalDocPadExecutable
 	 * @return {String} the path to the local DocPad executable
 	 */
-	get localDocPadExecutable() {
-		return pathUtil.join(process.cwd(), 'node_modules', 'docpad', 'bin', 'docpad');
+	static getLocalDocPadExecutable () {
+		return pathUtil.join(process.cwd(), 'node_modules', 'docpad', 'bin', 'docpad')
 	}
 
 	/**
 	 * Is Local DocPad Installation
 	 * @private
-	 * @method flagLocalDocPadExecutable
+	 * @method getFlagLocalDocPadExecutable
 	 * @return {Boolean}
 	 */
-	get flagLocalDocPadExecutable() {
-		return (process.argv.includes(docpadUtil.localDocPadExecutable));
+	static getFlagLocalDocPadExecutable () {
+		return (process.argv.includes(DocpadUtil.getLocalDocPadExecutable()))
 	}
 
 	/**
@@ -189,8 +187,8 @@ export class DocpadUtil {
 	 * @method getLocalDocPadExecutableExistance
 	 * @return {Boolean}
 	 */
-	getLocalDocPadExecutableExistance() {
-		return safefs.existsSync(this.LocalDocPadExecutable) === true;
+	static getLocalDocPadExecutableExistance () {
+		return safefs.existsSync(DocpadUtil.getLocalDocPadExecutable()) === true
 	}
 
 	/**

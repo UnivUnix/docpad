@@ -10,7 +10,11 @@ const IGNORE = 0, WARN = 1, ERROR = 2, MAX_PARAMS = 4
 const config = {
 	extends: ['eslint:recommended'],
 	plugins: [],
-	parserOptions: {ecmaFeatures: {}},
+	parserOptions: {
+		ecmaVersion: 6,
+		sourceType: "module",
+		ecmaFeatures: {}
+	},
 	env: {},
 	rules: {
 		// ----------------------------

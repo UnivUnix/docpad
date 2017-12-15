@@ -1,39 +1,25 @@
-/*
- * decaffeinate suggestions:
- * DS001: Remove Babel/TypeScript constructor workaround
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS103: Rewrite code to no longer use __guard__
- * DS104: Avoid inline assignments
- * DS203: Remove `|| {}` from converted for-own loops
- * DS204: Change includes calls to have a more natural evaluation order
- * DS206: Consider reworking classes to avoid initClass
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 // =====================================
 // Requires
 
 // Standard Library
-const util = require('util');
-const pathUtil = require('path');
+import * as util from 'util'
+import * as pathUtil from 'path'
 
 // External
-const isTextOrBinary = require('istextorbinary');
-const typeChecker = require('typechecker');
-const safefs = require('safefs');
-const mime = require('mime');
-const extendr = require('extendr');
-const extractOptsAndCallback = require('extract-opts');
+import * as isTextOrBinary from 'istextorbinary'
+import * as typeChecker from 'typechecker'
+import * as safefs from 'safefs'
+import * as mime from 'mime'
+import * as extendr from 'extendr'
+import * as extractOptsAndCallback from 'extract-opts'
 
 // Optional
-let jschardet = null;
-let encodingUtil = null;
+let jschardet = null
+let encodingUtil = null
 
 // Local
-const {Model} = require('../base');
-const docpadUtil = require('../util');
-
+import Model from '../base'
+import DocpadUtil from '../util'
 
 // =====================================
 // Classes
@@ -64,17 +50,10 @@ const docpadUtil = require('../util');
  * @constructor
  * @extends Model
  */
-class FileModel extends Model {
+export class FileModel extends Model {
 	constructor(...args) {
-		{
-		  // Hack: trick Babel/TypeScript into allowing this before super.
-		  if (false) { super(); }
-		  let thisFn = (() => { this; }).toString();
-		  let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-		  eval(`${thisName} = this;`);
-		}
-		this.action = this.action.bind(this);
 		super(...args);
+		this.action = this.action.bind(this);
 	}
 
 	static initClass() {
@@ -1546,12 +1525,3 @@ class FileModel extends Model {
 	}
 }
 FileModel.initClass();
-
-
-// ---------------------------------
-// Export
-module.exports = FileModel;
-
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}

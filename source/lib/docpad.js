@@ -61,7 +61,7 @@ import {Events,Model,Collection,QueryCollection} from "./base";
 import DocpadUtil from "./util";
 
 // Models
-const FileModel = require('./models/file');
+import FileModel from "./models/file";
 const DocumentModel = require('./models/document');
 
 // Collections
