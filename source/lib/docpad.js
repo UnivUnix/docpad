@@ -973,7 +973,7 @@ export class DocPad extends EventEmitterGrouped {
 	 * @return {String}
 	 */
 	getVersionString() {
-		if (docpadUtil.isLocalDocPadExecutable()) {
+		if (DocpadUtil.isLocalDocPadExecutable()) {
 			return util.format(this.getLocale().versionLocal, this.getVersion(), this.corePath);
 		} else {
 			return util.format(this.getLocale().versionGlobal, this.getVersion(), this.corePath);
@@ -1102,7 +1102,7 @@ export class DocPad extends EventEmitterGrouped {
 	 * @param {Object} args
 	 * @return {Object}
 	 */
-	action(...args) { return docpadUtil.action.apply(this, args); }
+	action(...args) { return DocpadUtil.action.apply(this, args); }
 
 	/**
 	 * Get the error runner instance
@@ -2274,7 +2274,7 @@ destroyWatchers\
 		docpad.destroyRegenerateTimer();
 
 		// Wait one second to wait for any logging to complete
-		docpadUtil.wait(1000, () =>
+		DocpadUtil.wait(1000, () =>
 
 			// Destroy Plugins
 			docpad.emitSerial('docpadDestroy', function(err) {
@@ -3537,7 +3537,7 @@ destroyWatchers\
 
 		// Even though the error would have already been logged by the above
 		// Ensure it is definitely outputted in the case the above fails
-		docpadUtil.writeError(err);
+		DocpadUtil.writeError(err);
 
 		// Destroy DocPad
 		this.destroy();
@@ -3558,7 +3558,7 @@ destroyWatchers\
 	inspector(obj, opts) {
 		if (opts == null) { opts = {}; }
 		if (opts.colors == null) { opts.colors = this.getConfig().color; }
-		return docpadUtil.inspect(obj, opts);
+		return DocpadUtil.inspect(obj, opts);
 	}
 
 	/**
@@ -4724,7 +4724,7 @@ destroyWatchers\
 			local: this.packagePath,
 			remote: config.helperUrl+'latest',
 			newVersionCallback(details) {
-				const isLocalInstallation = docpadUtil.isLocalDocPadExecutable();
+				const isLocalInstallation = DocpadUtil.isLocalDocPadExecutable();
 				const message = (isLocalInstallation ? locale.versionOutdatedLocal : locale.versionOutdatedGlobal);
 				const currentVersion = `v${details.local.version}`;
 				const latestVersion = `v${details.remote.version}`;
@@ -6223,7 +6223,7 @@ https://github.com/bevry/docpad/issues/792\
 							if (err) { return next(err); }
 
 							// Forward onto the local DocPad Instance now that it has been installed
-							return docpadUtil.startLocalDocPadExecutable(next);
+							return DocpadUtil.startLocalDocPadExecutable(next);
 						});
 					});
 				}

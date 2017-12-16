@@ -1,8 +1,8 @@
 // ---------------------------------
 // Required modules for this.
-import * as DocpadUtil from '../lib/util'
-import * as DocPad from '../lib/docpad'
-import * as ConsoleInterface from '../lib/interfaces/console'
+import {DocpadUtil} from '../lib/util'
+import {DocPad} from '../lib/docpad'
+import {ConsoleInterface} from '../lib/interfaces/console'
 
 // ---------------------------------
 // Check node version right away

@@ -8,50 +8,56 @@
 // Requires
 
 // Local
-const DocPad = require('../lib/docpad');
-const docpadUtil = require('../lib/util');
+import {DocPad} from '../lib/docpad'
+import {DocpadUtil} from '../lib/util'
 
 
 // ---------------------------------
 // Helpers
 
 // Prepare
-const getArgument = function(name,value=null,defaultValue=null) {
-	let result = defaultValue;
-	const argumentIndex = process.argv.indexOf(`--${name}`);
+function getArgument (name, value = null, defaultValue = null) {
+	let result = defaultValue
+	const argumentIndex = process.argv.indexOf(`--${name}`)
 	if (argumentIndex !== -1) {
-		result = value != null ? value : process.argv[argumentIndex+1];
+		result = value != null ? value : process.argv[argumentIndex + 1]
 	}
-	return result;
-};
+	return result
+}
 
 // DocPad Action
-const action = getArgument('action', null, 'server generate');
+const action = getArgument('action', null, 'server generate')
 
 
 // ---------------------------------
 // DocPad Configuration
-const docpadConfig = {};
+const docpadConfig = {}
 
-docpadConfig.port = (function() {
-	let port = getArgument('port');
-	if (port && (isNaN(port) === false)) { port = parseInt(port,10); }
-	return port;
-})();
+docpadConfig.port = ( function () {
+	let port = getArgument('port')
+	if (port && (isNaN(port) === false)) {
+		port = parseInt(port, 10)
+	}
+	return port
+}())
 
 
 // ---------------------------------
 // Create DocPad Instance
-new DocPad(docpadConfig, function(err,docpad) {
+const docpad = new DocPad(docpadConfig, function (err, docpad) {
 	// Check
-	if (err) { return docpadUtil.writeError(err); }
+	if (err) {
+		return DocpadUtil.writeError(err)
+	}
 
 	// Generate and Serve
-	return docpad.action(action, function(err) {
+	return docpad.action(action, function (err) {
 		// Check
-		if (err) { return docpadUtil.writeError(err); }
+		if (err) {
+			return DocpadUtil.writeError(err)
+		}
 
 		// Done
-		return console.log('OK');
-	});
-});
+		return console.log('OK')
+	})
+})

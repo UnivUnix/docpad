@@ -8,10 +8,10 @@
 // Requires
 
 // External
-const typeChecker = require('typechecker');
+import * as typeChecker from 'typechecker'
 
 // Local
-const {Collection,Model} = require('../base');
+import {Collection, Model} from '../base'
 
 
 // =====================================
@@ -27,14 +27,14 @@ const {Collection,Model} = require('../base');
  * @constructor
  * @extends Collection
  */
-class ElementsCollection extends Collection {
-	static initClass() {
-	
+export class ElementsCollection extends Collection {
+	static initClass () {
+
 		/**
 		 * Base Model for all items in this collection
 		 * @property {Object} model
 		 */
-		this.prototype.model = Model;
+		this.prototype.model = Model
 	}
 
 	/**
@@ -43,54 +43,63 @@ class ElementsCollection extends Collection {
 	 * @method add
 	 * @param {Array} values string array of values
 	 * @param {Object} opts
+	 * @returns {null}
 	 */
-	add(values,opts) {
+	add (values, opts) {
 		// Ensure array
 		if (typeChecker.isArray(values)) {
-			values = values.slice();
-		} else if (values) {
-			values = [values];
-		} else {
-			values = [];
+			values = values.slice()
+		}
+		else if (values) {
+			values = [values]
+		}
+		else {
+			values = []
 		}
 
 		// Convert string based array properties into html
 		for (let key = 0; key < values.length; key++) {
-			const value = values[key];
+			const value = values[key]
 			if (typeChecker.isString(value)) {
-				values[key] = new Model({html:value});
+				values[key] = new Model({html: value})
 			}
 		}
 
 		// Call the super with our values
-		super.add(values, opts);
+		super.add(values, opts)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	// Chain
-	set() { super.set(); return this; }
-	remove() { super.remove(); return this; }
-	reset() { super.reset(); return this; }
+	set () {
+		super.set()
+		return this
+	}
+	remove () {
+		super.remove()
+		return this
+	}
+	reset () {
+		super.reset()
+		return this
+	}
 
 	/**
 	 * Create a way to output our elements to HTML
 	 * @method toHTML
 	 * @return {String}
 	 */
-	toHTML() {
-		let html = '';
-		this.forEach(item => html += item.get('html') || '');
-		return html;
+	toHTML () {
+		let html = ''
+		this.forEach( (item) => {
+			html += item.get('html') || ''
+		})
+		return html
 	}
 
 	// Join alias toHTML for b/c
-	join() { return this.toHTML(); }
+	join () { return this.toHTML() }
 }
-ElementsCollection.initClass();
-
-
-// =====================================
-// Export
-module.exports = ElementsCollection;
+ElementsCollection.initClass()

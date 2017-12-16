@@ -2,7 +2,7 @@
 // Requires
 
 // Local
-const ElementsCollection = require('./elements');
+import ElementsCollection from './elements'
 
 
 // =====================================
@@ -15,9 +15,4 @@ const ElementsCollection = require('./elements');
  * @constructor
  * @extends ElementsCollection
  */
-class MetaCollection extends ElementsCollection {}
-
-
-// =====================================
-// Export
-module.exports = MetaCollection;
+export class MetaCollection extends ElementsCollection {}

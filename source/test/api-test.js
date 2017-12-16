@@ -14,7 +14,7 @@ const {equal} = require('assert-helpers');
 const joe = require('joe');
 
 // Local
-const docpadUtil = require('../lib/util');
+import {DocpadUtil} from '../lib/util'
 
 
 // =====================================
@@ -27,12 +27,14 @@ const renderPath = pathUtil.join(rootPath, 'render');
 const expectPath = pathUtil.join(rootPath, 'render-expected');
 const cliPath    = pathUtil.join(docpadPath, 'bin', 'docpad');
 
+console.log(DocpadUtil)
+
 // Configure DocPad
 const docpadConfig = {
 	action: false,
 	port: 9780,
 	rootPath,
-	logLevel: docpadUtil.getDefaultLogLevel(),
+	logLevel: DocpadUtil.getDefaultLogLevel(),
 	skipUnsupportedPlugins: false,
 	catchExceptions: false,
 	environments: {

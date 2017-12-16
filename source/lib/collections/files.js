@@ -10,11 +10,11 @@
 // Requires
 
 // Standard Library
-const pathUtil = require('path');
+import * as pathUtil from 'path'
 
 // Local
-const {QueryCollection,Model} = require('../base');
-const FileModel = require('../models/file');
+import {QueryCollection, Model} from '../base'
+import FileModel from '../models/file'
 
 
 // =====================================
@@ -38,22 +38,22 @@ const FileModel = require('../models/file');
  * @constructor
  * @extends QueryCollection
  */
-class FilesCollection extends QueryCollection {
-	static initClass() {
-	
+export class FilesCollection extends QueryCollection {
+	static initClass () {
+
 		/**
 		 * Base Model for all items in this collection
 		 * @private
 		 * @property {Object} model
 		 */
-		this.prototype.model = FileModel;
-	
+		this.prototype.model = FileModel
+
 		/**
 		 * Base Collection for all child collections
 		 * @private
 		 * @property {Object} collection
 		 */
-		this.prototype.collection = FilesCollection;
+		this.prototype.collection = FilesCollection
 	}
 
 	/**
@@ -62,12 +62,19 @@ class FilesCollection extends QueryCollection {
 	 * @method initialize
 	 * @param {Object} attrs
 	 * @param {Object} [opts={}]
+	 * @returns {null}
 	 */
-	initialize(attrs,opts) {
-		if (opts == null) { opts = {}; }
-		if (this.options == null) { this.options = {}; }
-		if (this.options.name == null) { this.options.name = opts.name || null; }
-		return super.initialize(attrs, opts);
+	initialize (attrs, opts) {
+		if (opts == null) {
+			opts = {}
+		}
+		if (this.options == null) {
+			this.options = {}
+		}
+		if (this.options.name == null) {
+			this.options.name = opts.name || null
+		}
+		return super.initialize(attrs, opts)
 	}
 
 	/**
@@ -79,9 +86,9 @@ class FilesCollection extends QueryCollection {
 	 * @param {Object} paging
 	 * @return {Object} the file, if found
 	 */
-	fuzzyFindOne(data,sorting,paging) {
+	fuzzyFindOne (data, sorting, paging) {
 		// Prepare
-		const escapedData = data != null ? data.replace(/[\/]/g, pathUtil.sep) : undefined;
+		const escapedData = data != null ? data.replace(/[/]/g, pathUtil.sep) : null
 		const queries = [
 			{relativePath: escapedData},
 			{relativeBase: escapedData},
@@ -89,21 +96,18 @@ class FilesCollection extends QueryCollection {
 			{relativePath: {$startsWith: escapedData}},
 			{fullPath: {$startsWith: escapedData}},
 			{url: {$startsWith: data}}
-		];
+		]
 
 		// Try the queries
-		for (let query of Array.from(queries)) {
-			const file = this.findOne(query, sorting, paging);
-			if (file) { return file; }
+		for (const query of Array.from(queries)) {
+			const file = this.findOne(query, sorting, paging)
+			if (file) {
+				return file
+			}
 		}
 
 		// Didn't find a file
-		return null;
+		return null
 	}
 }
-FilesCollection.initClass();
-
-
-// =====================================
-// Export
-module.exports = FilesCollection;
+FilesCollection.initClass()

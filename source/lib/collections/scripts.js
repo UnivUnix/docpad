@@ -8,10 +8,10 @@
 // Requires
 
 // External
-const typeChecker = require('typechecker');
+import * as typeChecker from 'typechecker'
 
 // Local
-const ElementsCollection = require('./elements');
+import ElementsCollection from './elements'
 
 
 // =====================================
@@ -24,7 +24,7 @@ const ElementsCollection = require('./elements');
  * @constructor
  * @extends ElementsCollection
  */
-class ScriptsCollection extends ElementsCollection {
+export class ScriptsCollection extends ElementsCollection {
 
 	/**
 	 * Add an element to the collection
@@ -32,51 +32,63 @@ class ScriptsCollection extends ElementsCollection {
 	 * @method add
 	 * @param {Array} values string array of file paths
 	 * @param {Object} opts
+	 * @returns {null}
 	 */
-	add(values,opts) {
+	add (values, opts) {
 		// Prepare
-		if (!opts) { opts = {}; }
-		if (opts.defer == null) { opts.defer = true; }
-		if (opts.async == null) { opts.async = false; }
-		if (!opts.attrs) { opts.attrs = ''; }
+		if (!opts) {
+			opts = {}
+		}
+		if (opts.defer == null) {
+			opts.defer = true
+		}
+		if (opts.async == null) {
+			opts.async = false
+		}
+		if (!opts.attrs) {
+			opts.attrs = ''
+		}
 		if (typeChecker.isArray(values)) {
-			values = values.slice();
-		} else if (values) {
-			values = [values];
-		} else {
-			values = [];
+			values = values.slice()
+		}
+		else if (values) {
+			values = [values]
+		}
+		else {
+			values = []
 		}
 
 		// Build attrs
-		if (opts.defer) { opts.attrs += "defer=\"defer\" "; }
-		if (opts.async) { opts.attrs += "async=\"async\" "; }
+		if (opts.defer) {
+			opts.attrs += 'defer="defer" '
+		}
+		if (opts.async) {
+			opts.attrs += 'async="async" '
+		}
 
 		// Convert urls into script element html
 		for (let key = 0; key < values.length; key++) {
-			const value = values[key];
+			const value = values[key]
 			if (typeChecker.isString(value)) {
 				if (value[0] === '<') {
-					continue;  // we are an element already, don't bother doing anything
-				} else if (value.indexOf(' ') === -1) {
+					continue  // we are an element already, don't bother doing anything
+				}
+				else if (value.indexOf(' ') === -1) {
 					// we are a url
 					values[key] = `\
 <script ${opts.attrs} src="${value}"></script>\
-`;
-				} else {
+`
+				}
+				else {
 					// we are inline
 					values[key] = `\
 <script ${opts.attrs}>${value}</script>\
-`;
+`
 				}
 			}
 		}
 
 		// Call the super with our values
-		return super.add(values, opts);
+		return super.add(values, opts)
 	}
 }
-
-
-// =====================================
-// Export
-module.exports = ScriptsCollection;
