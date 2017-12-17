@@ -11,7 +11,6 @@
 import {DocPad} from '../lib/docpad'
 import {DocpadUtil} from '../lib/util'
 
-
 // ---------------------------------
 // Helpers
 

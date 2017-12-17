@@ -14,7 +14,7 @@ import * as pathUtil from 'path'
 
 // Local
 import {QueryCollection, Model} from '../base'
-import FileModel from '../models/file'
+import {FileModel} from '../models/file'
 
 
 // =====================================

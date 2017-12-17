@@ -10,7 +10,7 @@
 import * as typeChecker from 'typechecker'
 
 // Local
-import ElementsCollection from './elements'
+import {ElementsCollection} from './elements'
 
 
 // =====================================

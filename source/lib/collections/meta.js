@@ -2,7 +2,7 @@
 // Requires
 
 // Local
-import ElementsCollection from './elements'
+import {ElementsCollection} from './elements'
 
 
 // =====================================

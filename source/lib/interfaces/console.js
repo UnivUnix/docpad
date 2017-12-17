@@ -10,17 +10,17 @@
 // Requires
 
 // Standard Library
-const pathUtil = require('path');
+import * as pathUtil from 'path'
 
 // External
-const safefs = require('safefs');
-const safeps = require('safeps');
-const {TaskGroup} = require('taskgroup');
-const extendr = require('extendr');
-const promptly = require('promptly');
+import * as safefs from 'safefs'
+import * as safeps from 'safeps'
+import {TaskGroup} from 'taskgroup'
+import * as extendr from 'extendr'
+import * as promptly from 'promptly'
 
 // Local
-const docpadUtil = require('../util');
+import {DocpadUtil} from '../util'
 
 
 // =====================================
@@ -291,7 +291,7 @@ class ConsoleInterface {
 		const logLevel = docpad.getLogLevel();
 
 		// Error?
-		if (err) { docpadUtil.writeError(err); }
+		if (err) { DocpadUtil.writeError(err); }
 
 		// Log Shutdown
 		docpad.log('info', locale.consoleShutdown);
@@ -310,7 +310,7 @@ class ConsoleInterface {
 		// Destroy docpad
 		docpad.destroy(function(err) {
 			// Error?
-			if (err) { docpadUtil.writeError(err); }
+			if (err) { DocpadUtil.writeError(err); }
 
 			// Output if we are not in silent mode
 			if (6 <= logLevel) {
@@ -319,7 +319,7 @@ class ConsoleInterface {
 				if (activeRequests != null ? activeRequests.length : undefined) {
 					console.log(`\
 Waiting on the requests:
-${docpadUtil.inspect(activeRequests)}\
+${DocpadUtil.inspect(activeRequests)}\
 `
 					);
 				}
@@ -329,7 +329,7 @@ ${docpadUtil.inspect(activeRequests)}\
 				if (activeHandles != null ? activeHandles.length : undefined) {
 					return console.log(`\
 Waiting on the handles:
-${docpadUtil.inspect(activeHandles)}\
+${DocpadUtil.inspect(activeHandles)}\
 `
 					);
 				}
@@ -954,7 +954,7 @@ ${docpadUtil.inspect(activeHandles)}\
 		;
 
 		// Timeout if we don't have stdin
-		var timeout = docpadUtil.wait(1000, function() {
+		var timeout = DocpadUtil.wait(1000, function() {
 			// Clear timeout
 			timeout = null;
 
