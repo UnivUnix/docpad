@@ -10,12 +10,12 @@
 // Requires
 
 // Standard Library
-const pathUtil = require('path');
-const util = require('util');
+import * as pathUtil from 'path'
+import * as util from 'util'
 
 // External
-const semver = require('semver');
-const safefs = require('safefs');
+import * as semver from 'semver'
+import * as safefs from 'safefs'
 
 
 
@@ -29,90 +29,6 @@ const safefs = require('safefs');
  * @constructor
  */
 class PluginLoader {
-	static initClass() {
-	
-		// ---------------------------------
-		// Constructed
-	
-		/**
-		 * The DocPad Instance
-		 * @private
-		 * @property {Object} docpad
-		 */
-		this.prototype.docpad = null;
-	
-	
-		/**
-		 * The BasePlugin Class
-		 * @private
-		 * @property {Object}
-		 */
-		this.prototype.BasePlugin = null;
-	
-	
-		/**
-		 * The full path of the plugin's directory
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.dirPath = null;
-	
-	
-		// ---------------------------------
-		// Loaded
-	
-		/**
-		 * The full path of the plugin's package.json file
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.packagePath = null;
-	
-		/**
-		 * The parsed contents of the plugin's package.json file
-		 * @private
-		 * @property {Object}
-		 */
-		this.prototype.packageData = {};
-	
-		/**
-		 * The full path of the plugin's main file
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.pluginPath = null;
-	
-	
-		/**
-		 * The parsed content of the plugin's main file
-		 * @private
-		 * @property {Object}
-		 */
-		this.prototype.pluginClass = {};
-	
-		/**
-		 * The plugin name
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.pluginName = null;
-	
-		/**
-		 * The plugin version
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.pluginVersion = null;
-	
-		/**
-		 * Node modules path
-		 * @private
-		 * @property {String}
-		 */
-		this.prototype.nodeModulesPath = null;
-	}
-
-
 	// ---------------------------------
 	// Functions
 
@@ -124,20 +40,86 @@ class PluginLoader {
 	 * @param {String} opts.dirPath The directory path of the plugin
 	 * @param {Object} opts.BasePlugin The base plugin class
 	 */
-	constructor({docpad1,dirPath,BasePlugin}) {
+	constructor ({docpad1, dirPath, BasePlugin}) {
+		// ---------------------------------
+		// Constructed
+
+		/**
+		 * The DocPad Instance
+		 * @private
+		 * @property {Object} docpad
+		 */
+		this.docpad = docpad1
+
+		/**
+		 * The BasePlugin Class
+		 * @private
+		 * @property {Object}
+		 */
+		this.BasePlugin = BasePlugin
+
+		/**
+		 * The full path of the plugin's directory
+		 * @private
+		 * @property {String}
+		 */
+		this.dirPath = dirPath
+
+		// ---------------------------------
+		// Loaded
+
+		/**
+		 * The full path of the plugin's package.json file
+		 * @private
+		 * @property {String}
+		 */
+		this.packagePath = null
+
+		/**
+		 * The parsed contents of the plugin's package.json file
+		 * @private
+		 * @property {Object}
+		 */
+		this.packageData = {}
+
+		/**
+		 * The full path of the plugin's main file
+		 * @private
+		 * @property {String}
+		 */
+		this.pluginPath = null
+
+		/**
+		 * The parsed content of the plugin's main file
+		 * @private
+		 * @property {Object}
+		 */
+		this.pluginClass = {}
+
+		/**
+		 * The plugin name
+		 * @private
+		 * @property {String}
+		 */
+		this.pluginName = pathUtil.basename(this.dirPath).replace(/^docpad-plugin-/, '')
+
+		/**
+		 * The plugin version
+		 * @private
+		 * @property {String}
+		 */
+		this.pluginVersion = null
+
+		/**
+		 * Node modules path
+		 * @private
+		 * @property {String}
+		 */
+		this.nodeModulesPath = pathUtil.resolve(this.dirPath, 'node_modules')
+
 		// Prepare
-		this.docpad = docpad1;
-		this.dirPath = dirPath;
-		this.BasePlugin = BasePlugin;
-		const { docpad } = this;
-
-		// Apply
-		this.pluginName = pathUtil.basename(this.dirPath).replace(/^docpad-plugin-/,'');
-		this.pluginClass = {};
-		this.packageData = {};
-		this.nodeModulesPath = pathUtil.resolve(this.dirPath, 'node_modules');
+		const { docpad } = this
 	}
-
 
 	/**
 	 * Loads the package.json file and extracts the main path
@@ -145,51 +127,62 @@ class PluginLoader {
 	 * @method exists
 	 * @param {Function} next
 	 */
-	exists(next) {
+	exists (next) {
 		// Prepare
-		const packagePath = this.packagePath || pathUtil.resolve(this.dirPath, "package.json");
-		const failure = (err=null) => next(err, false);
-		const success = () => next(null, true);
+		const packagePath = this.packagePath || pathUtil.resolve(this.dirPath, 'package.json')
+		const failure = (err = null) => next(err, false)
+		const success = () => next(null, true)
 
 		// Check the package
-		safefs.exists(packagePath, exists => {
-			if (!exists) { return failure(); }
+		safefs.exists(packagePath, (exists) => {
+			if (!exists) {
+				return failure()
+			}
 
 			// Apply
-			this.packagePath = packagePath;
+			this.packagePath = packagePath
 
 			// Read the package
-			return safefs.readFile(packagePath, (err,data) => {
-				if (err) { return failure(err); }
+			return safefs.readFile(packagePath, (err, data) => {
+				if (err) {
+					failure(err)
+				}
 
 				// Parse the package
 				try {
-					this.packageData = JSON.parse(data.toString());
-				} catch (error) {
-					err = error;
-					return failure(err);
+					this.packageData = JSON.parse(data.toString())
+				}
+				catch (error) {
+					err = error
+					failure(err)
 				}
 				finally {
-					if (!this.packageData) { return failure(); }
+					if (!this.packageData) {
+						failure()
+					}
 				}
 
 				// Extract the version and main
-				const pluginVersion = this.packageData.version;
-				const pluginPath = this.packageData.main && pathUtil.join(this.dirPath, this.packageData.main);
+				const pluginVersion = this.packageData.version
+				const pluginPath = this.packageData.main && pathUtil.join(this.dirPath, this.packageData.main)
 
 				// Check defined
-				if (!pluginVersion) { return failure(); }
-				if (!pluginPath) { return failure(); }
+				if (!pluginVersion) {
+					return failure()
+				}
+				if (!pluginPath) {
+					return failure()
+				}
 
 				// Success
-				this.pluginVersion = pluginVersion;
-				this.pluginPath = pluginPath;
-				return success();
-			});
-		});
+				this.pluginVersion = pluginVersion
+				this.pluginPath = pluginPath
+				return success()
+			})
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -200,21 +193,26 @@ class PluginLoader {
 	 * @method unsupported
 	 * @param {Function} next
 	 */
-	unsupported(next) {
+	unsupported (next) {
 		// Prepare
-		const { docpad } = this;
+		const { docpad } = this
 
 		// Extract
-		const { version } = this.packageData;
-		const keywords = this.packageData.keywords || [];
-		const platforms = this.packageData.platforms || [];
-		const engines = this.packageData.engines || {};
-		const peerDependencies = this.packageData.peerDependencies || {};
+		const { version } = this.packageData
+		const keywords = this.packageData.keywords || []
+		const platforms = this.packageData.platforms || []
+		const engines = this.packageData.engines || {}
+		const peerDependencies = this.packageData.peerDependencies || {}
+
+		let unsupported
+		if(!keywords.includes('docpad-plugin')){
+			unsupported = 'type'
+		}
 
 		// Check
 		const unsupported =
 			// Check type
-			!Array.from(keywords).includes('docpad-plugin') ?
+			!keywords.includes('docpad-plugin') ?
 				'type'
 
 			// Check version
@@ -222,7 +220,7 @@ class PluginLoader {
 				'version-plugin'
 
 			// Check platform
-			: platforms.length && !Array.from(platforms).includes(process.platform) ?
+			: platforms.length && !platforms.includes(process.platform) ?
 				'platform'
 
 			// Check node engine

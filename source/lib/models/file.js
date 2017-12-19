@@ -51,24 +51,21 @@ import DocpadUtil from '../util'
  * @extends Model
  */
 export class FileModel extends Model {
-	constructor(...args) {
-		super(...args);
-		this.action = this.action.bind(this);
-	}
+	constructor (...args) {
+		super(...args)
+		this.action = this.action.bind(this)
 
-	static initClass() {
-	
 		// ---------------------------------
 		// Properties
-	
+
 		/**
 		 * The file model class. This should
 		 * be overridden in any descending classes.
 		 * @private
-		 * @property {Object} klass
+		 * @property {Object} Class
 		 */
-		this.prototype.klass = FileModel;
-	
+		this.Class = FileModel
+
 		/**
 		 * String name of the model type.
 		 * In this case, 'file'. This should
@@ -76,27 +73,27 @@ export class FileModel extends Model {
 		 * @private
 		 * @property {String} type
 		 */
-		this.prototype.type = 'file';
-	
+		this.type = 'file'
+
 		/**
 		 * Task Group Class
 		 * @private
 		 * @property {Object} TaskGroup
 		 */
-		this.prototype.TaskGroup = null;
-	
+		this.TaskGroup = null
+
 		/**
 		 * The out directory path to put the relative path.
 		 * @property {String} rootOutDirPath
 		 */
-		this.prototype.rootOutDirPath = null;
-	
+		this.rootOutDirPath = null
+
 		/**
 		 * Whether or not we should detect encoding
 		 * @property {Boolean} detectEncoding
 		 */
-		this.prototype.detectEncoding = false;
-	
+		this.detectEncoding = false
+
 		/**
 		 * Node.js file stat object.
 		 * https://nodejs.org/api/fs.html#fs_class_fs_stats.
@@ -104,204 +101,203 @@ export class FileModel extends Model {
 		 * dates and size.
 		 * @property {Object} stat
 		 */
-		this.prototype.stat = null;
-	
+		this.stat = null
+
 		/**
 		 * File buffer. Node.js Buffer object.
 		 * https://nodejs.org/api/buffer.html#buffer_class_buffer.
 		 * Provides methods for dealing with binary data directly.
 		 * @property {Object} buffer
 		 */
-		this.prototype.buffer = null;
-	
+		this.buffer = null
+
 		/**
 		 * Buffer time.
 		 * @property {Object} bufferTime
 		 */
-		this.prototype.bufferTime = null;
-	
+		this.bufferTime = null
+
 		/**
 		 * The parsed file meta data (header).
 		 * Is a Model instance.
 		 * @private
 		 * @property {Object} meta
 		 */
-		this.prototype.meta = null;
-	
+		this.meta = null
+
 		/**
 		 * Locale information for the file
 		 * @private
 		 * @property {Object} locale
 		 */
-		this.prototype.locale = null;
-	
-	
+		this.locale = null
+
+
 		// ---------------------------------
 		// Attributes
-	
+
 		/**
 		 * The default attributes for any file model.
 		 * @private
 		 * @property {Object}
 		 */
-		this.prototype.defaults = {
-	
+		this.defaults = {
+
 			// ---------------------------------
 			// Automaticly set variables
-	
+
 			// The unique document identifier
 			id: null,
-	
+
 			// The file's name without the extension
 			basename: null,
-	
+
 			// The out file's name without the extension
 			outBasename: null,
-	
+
 			// The file's last extension
 			// "hello.md.eco" -> "eco"
 			extension: null,
-	
+
 			// The extension used for our output file
 			outExtension: null,
-	
+
 			// The file's extensions as an array
 			// "hello.md.eco" -> ["md","eco"]
 			extensions: null,  // Array
-	
+
 			// The file's name with the extension
 			filename: null,
-	
+
 			// The full path of our source file, only necessary if called by @load
 			fullPath: null,
-	
+
 			// The full directory path of our source file
 			fullDirPath: null,
-	
+
 			// The output path of our file
 			outPath: null,
-	
+
 			// The output path of our file's directory
 			outDirPath: null,
-	
+
 			// The file's name with the rendered extension
 			outFilename: null,
-	
+
 			// The relative path of our source file (with extensions)
 			relativePath: null,
-	
+
 			// The relative output path of our file
 			relativeOutPath: null,
-	
+
 			// The relative directory path of our source file
 			relativeDirPath: null,
-	
+
 			// The relative output path of our file's directory
 			relativeOutDirPath: null,
-	
+
 			// The relative base of our source file (no extension)
 			relativeBase: null,
-	
+
 			// The relative base of our out file (no extension)
 			relativeOutBase: null,
-	
+
 			// The MIME content-type for the source file
 			contentType: null,
-	
+
 			// The MIME content-type for the out file
 			outContentType: null,
-	
+
 			// The date object for when this document was created
 			ctime: null,
-	
+
 			// The date object for when this document was last modified
 			mtime: null,
-	
+
 			// The date object for when this document was last rendered
 			rtime: null,
-	
+
 			// The date object for when this document was last written
 			wtime: null,
-	
+
 			// Does the file actually exist on the file system
 			exists: null,
-	
-	
+
 			// ---------------------------------
 			// Content variables
-	
+
 			// The encoding of the file
 			encoding: null,
-	
+
 			// The raw contents of the file, stored as a String
 			source: null,
-	
+
 			// The contents of the file, stored as a String
 			content: null,
-	
-	
+
 			// ---------------------------------
 			// User set variables
-	
+
 			// The tags for this document
 			tags: null,  // CSV/Array
-	
+
 			// Whether or not we should render this file
 			render: false,
-	
+
 			// Whether or not we should write this file to the output directory
 			write: true,
-	
+
 			// Whether or not we should write this file to the source directory
 			writeSource: false,
-	
+
 			// Whether or not this file should be re-rendered on each request
 			dynamic: false,
-	
+
 			// The title for this document
 			// Useful for page headings
 			title: null,
-	
+
 			// The name for this document, defaults to the outFilename
 			// Useful for navigation listings
 			name: null,
-	
+
 			// The date object for this document, defaults to mtime
 			date: null,
-	
+
 			// The generated slug (url safe seo title) for this document
 			slug: null,
-	
+
 			// The url for this document
 			url: null,
-	
+
 			// Alternative urls for this document
 			urls: null,  // Array
-	
+
 			// Whether or not we ignore this file
 			ignored: false,
-	
+
 			// Whether or not we should treat this file as standalone (that nothing depends on it)
 			standalone: false
-		};
-	
-	
+		}
+
 		// ---------------------------------
 		// Actions
-	
+
 		/**
 		 * The action runner instance bound to DocPad
 		 * @private
 		 * @property {Object} actionRunnerInstance
 		 */
-		this.prototype.actionRunnerInstance = null;
+		this.actionRunnerInstance = null
 	}
 	/**
 	 * Get the file's locale information
 	 * @method getLocale
 	 * @return {Object} the locale
 	 */
-	getLocale() { return this.locale; }
+	getLocale () {
+		return this.locale
+	}
 
 	/**
 	 * Get Options. Returns an object containing
@@ -312,8 +308,8 @@ export class FileModel extends Model {
 	 * @return {Object}
 	 */
 	// @TODO: why does this not use the isOption way?
-	getOptions() {
-		return {detectEncoding: this.detectEncoding, rootOutDirPath: this.rootOutDirPath, locale: this.locale, stat: this.stat, buffer: this.buffer, meta: this.meta, TaskGroup: this.TaskGroup};
+	getOptions () {
+		return {detectEncoding: this.detectEncoding, rootOutDirPath: this.rootOutDirPath, locale: this.locale, stat: this.stat, buffer: this.buffer, meta: this.meta, TaskGroup: this.TaskGroup}
 	}
 
 	/**
@@ -324,10 +320,10 @@ export class FileModel extends Model {
 	 * @param {String} key
 	 * @return {Boolean}
 	 */
-	isOption(key) {
-		const names = ['detectEncoding', 'rootOutDirPath', 'locale', 'stat', 'data', 'buffer', 'meta', 'TaskGroup'];
-		const result = Array.from(names).includes(key);
-		return result;
+	static isOption (key) {
+		const names = ['detectEncoding', 'rootOutDirPath', 'locale', 'stat', 'data', 'buffer', 'meta', 'TaskGroup']
+		const result = names.includes(key)
+		return result
 	}
 
 	/**
@@ -337,21 +333,21 @@ export class FileModel extends Model {
 	 * @param {Object} attrs
 	 * @return {Object} the options object
 	 */
-	extractOptions(attrs) {
+	extractOptions (attrs) {
 		// Prepare
-		const result = {};
+		const result = {}
 
 		// Extract
-		for (let key of Object.keys(attrs || {})) {
-			const value = attrs[key];
+		for (const key of Object.keys(attrs)) {
+			const value = attrs[key]
 			if (this.isOption(key)) {
-				result[key] = value;
-				delete attrs[key];
+				result[key] = value
+				delete attrs[key]
 			}
 		}
 
 		// Return
-		return result;
+		return result
 	}
 
 	/**
@@ -362,58 +358,57 @@ export class FileModel extends Model {
 	 * @method setOptions
 	 * @param {Object} [attrs={}]
 	 */
-	setOptions(attrs) {
+	setOptions (attrs = {}) {
 		// TaskGroup
-		if (attrs == null) { attrs = {}; }
 		if (attrs.TaskGroup != null) {
-			this.TaskGroup = attrs.TaskGroup;
-			delete this.attributes.TaskGroup;
+			this.TaskGroup = attrs.TaskGroup
+			delete this.attributes.TaskGroup
 		}
 
 		// Root Out Path
 		if (attrs.detectEncoding != null) {
-			this.rootOutDirPath = attrs.detectEncoding;
-			delete this.attributes.detectEncoding;
+			this.rootOutDirPath = attrs.detectEncoding
+			delete this.attributes.detectEncoding
 		}
 
 		// Root Out Path
 		if (attrs.rootOutDirPath != null) {
-			this.rootOutDirPath = attrs.rootOutDirPath;
-			delete this.attributes.rootOutDirPath;
+			this.rootOutDirPath = attrs.rootOutDirPath
+			delete this.attributes.rootOutDirPath
 		}
 
 		// Locale
 		if (attrs.locale != null) {
-			this.locale = attrs.locale;
-			delete this.attributes.locale;
+			this.locale = attrs.locale
+			delete this.attributes.locale
 		}
 
 		// Stat
 		if (attrs.stat != null) {
-			this.setStat(attrs.stat);
-			delete this.attributes.stat;
+			this.setStat(attrs.stat)
+			delete this.attributes.stat
 		}
 
 		// Data
 		if (attrs.data != null) {
-			this.setBuffer(attrs.data);
-			delete this.attributes.data;
+			this.setBuffer(attrs.data)
+			delete this.attributes.data
 		}
 
 		// Buffer
 		if (attrs.buffer != null) {
-			this.setBuffer(attrs.buffer);
-			delete this.attributes.buffer;
+			this.setBuffer(attrs.buffer)
+			delete this.attributes.buffer
 		}
 
 		// Meta
 		if (attrs.meta != null) {
-			this.setMeta(attrs.meta);
-			delete this.attributes.meta;
+			this.setMeta(attrs.meta)
+			delete this.attributes.meta
 		}
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -421,25 +416,25 @@ export class FileModel extends Model {
 	 * @method clone
 	 * @return {Object} cloned file model
 	 */
-	clone() {
+	clone () {
 		// Fetch
-		const attrs = this.getAttributes();
-		const opts = this.getOptions();
+		const attrs = this.getAttributes()
+		const opts = this.getOptions()
 
 		// Clean up
-		delete attrs.id;
-		delete attrs.meta.id;
-		delete opts.meta.id;
-		delete opts.meta.attributes.id;
+		delete attrs.id
+		delete attrs.meta.id
+		delete opts.meta.id
+		delete opts.meta.attributes.id
 
 		// Clone
-		const clonedModel = new this.klass(attrs, opts);
+		const clonedModel = new this.Class(attrs, opts)
 
 		// Emit clone event so parent can re-attach listeners
-		this.emit('clone', clonedModel);
+		this.emit('clone', clonedModel)
 
 		// Return
-		return clonedModel;
+		return clonedModel
 	}
 
 
@@ -455,30 +450,41 @@ export class FileModel extends Model {
 	 * @param {Object} opts
 	 * @return {Object} encoded result
 	 */
-	encode(opts) {
+	encode (opts) {
 		// Prepare
-		const locale = this.getLocale();
-		let result = opts.content;
-		if (opts.to == null) { opts.to = 'utf8'; }
-		if (opts.from == null) { opts.from = 'utf8'; }
+		const locale = this.getLocale()
+		let result = opts.content
+		if (opts.to == null) {
+			opts.to = 'utf8'
+		}
+		if (opts.from == null) {
+			opts.from = 'utf8'
+		}
 
 		// Import optional dependencies
-		try { if (encodingUtil == null) { encodingUtil = require('encoding'); } } catch (error) {}
+		try {
+			if (encodingUtil == null) {
+				encodingUtil = require('encoding')
+			}
+		}
+		catch (error) {}
 
 		// Convert
 		if (encodingUtil != null) {
-			this.log('info', util.format(locale.fileEncode, opts.to, opts.from, opts.path));
+			this.log('info', util.format(locale.fileEncode, opts.to, opts.from, opts.path))
 			try {
-				result = encodingUtil.convert(opts.content, opts.to, opts.from);
-			} catch (err) {
-				this.log('warn', util.format(locale.fileEncodeConvertError, opts.to, opts.from, opts.path));
+				result = encodingUtil.convert(opts.content, opts.to, opts.from)
 			}
-		} else {
-			this.log('warn', util.format(locale.fileEncodeConvertError, opts.to, opts.from, opts.path));
+			catch (err) {
+				this.log('warn', util.format(locale.fileEncodeConvertError, opts.to, opts.from, opts.path))
+			}
+		}
+		else {
+			this.log('warn', util.format(locale.fileEncodeConvertError, opts.to, opts.from, opts.path))
 		}
 
 		// Return
-		return result;
+		return result
 	}
 
 	/**
@@ -489,11 +495,13 @@ export class FileModel extends Model {
 	 * @method setBuffer
 	 * @param {Object} [buffer]
 	 */
-	setBuffer(buffer) {
-		if (!Buffer.isBuffer(buffer)) { buffer = new Buffer(buffer); }
-		this.bufferTime = this.get('mtime') || new Date();
-		this.buffer = buffer;
-		return this;
+	setBuffer (buffer) {
+		if (!Buffer.isBuffer(buffer)) {
+			buffer = new Buffer(buffer)
+		}
+		this.bufferTime = this.get('mtime') || new Date()
+		this.buffer = buffer
+		return this
 	}
 
 	/**
@@ -502,8 +510,8 @@ export class FileModel extends Model {
 	 * @method getBuffer
 	 * @return {Object} node.js buffer object
 	 */
-	getBuffer() {
-		return this.buffer;
+	getBuffer () {
+		return this.buffer
 	}
 
 	/**
@@ -512,8 +520,8 @@ export class FileModel extends Model {
 	 * @method isBufferOutdated
 	 * @return {Boolean}
 	 */
-	isBufferOutdated() {
-		return ((this.buffer != null) === false) || (this.bufferTime < (this.get('mtime') || new Date()));
+	isBufferOutdated () {
+		return ((this.buffer != null) === false) || (this.bufferTime < (this.get('mtime') || new Date()))
 	}
 
 	/**
@@ -521,13 +529,13 @@ export class FileModel extends Model {
 	 * @method setStat
 	 * @param {Object} stat
 	 */
-	setStat(stat) {
-		this.stat = stat;
+	setStat (stat) {
+		this.stat = stat
 		this.set({
 			ctime: new Date(stat.ctime),
 			mtime: new Date(stat.mtime)
-		});
-		return this;
+		})
+		return this
 	}
 
 	/**
@@ -535,8 +543,8 @@ export class FileModel extends Model {
 	 * @method getStat
 	 * @return {Object} the file stat
 	 */
-	getStat() {
-		return this.stat;
+	getStat () {
+		return this.stat
 	}
 
 	/**
@@ -550,13 +558,12 @@ export class FileModel extends Model {
 	 * @param {Object} [dereference=true]
 	 * @return {Object}
 	 */
-	//NOTE: will the file model's ID be deleted if
-	//dereference=false is passed??
-	getAttributes(dereference) {
-		if (dereference == null) { dereference = true; }
-		const attrs = this.toJSON(dereference);
-		delete attrs.id;
-		return attrs;
+	// NOTE: will the file model's ID be deleted if
+	// dereference=false is passed??
+	getAttributes (dereference = true) {
+		const attrs = this.toJSON(dereference)
+		delete attrs.id
+		return attrs
 	}
 
 	/**
@@ -570,12 +577,13 @@ export class FileModel extends Model {
 	 * @param {Object} [dereference=false]
 	 * @return {Object}
 	 */
-	toJSON(dereference) {
-		if (dereference == null) { dereference = false; }
-		let data = super.toJSON(dereference);
-		data.meta = this.getMeta().toJSON();
-		if (dereference === true) { data = extendr.dereferenceJSON(data); }
-		return data;
+	toJSON (dereference = false) {
+		let data = super.toJSON(dereference)
+		data.meta = this.getMeta().toJSON()
+		if (dereference === true) {
+			data = extendr.dereferenceJSON(data)
+		}
+		return data
 	}
 
 	/**
@@ -587,12 +595,15 @@ export class FileModel extends Model {
 	 * @param {Object} [args...]
 	 * @return {Object}
 	 */
-	getMeta(...args) {
-		if (this.meta === null) { this.meta = new Model(); }
+	getMeta (...args) {
+		if (this.meta === null) {
+			this.meta = new Model()
+		}
 		if (args.length) {
-			return this.meta.get(...Array.from(args || []));
-		} else {
-			return this.meta;
+			return this.meta.get(...args)
+		}
+		else {
+			return this.meta
 		}
 	}
 
@@ -602,29 +613,29 @@ export class FileModel extends Model {
 	 * @param {Array} attrs the attributes to be applied
 	 * @param {Object} opts the options to be applied
 	 */
-	set(attrs,opts) {
+	set (attrs, opts) {
 		// Check
-		let left;
 		if (typeChecker.isString(attrs)) {
-			const newAttrs = {};
-			newAttrs[attrs] = opts;
-			return this.set(newAttrs, opts);
+			const newAttrs = {}
+			newAttrs[attrs] = opts
+			return this.set(newAttrs, opts)
 		}
 
 		// Prepare
-		attrs = (left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : undefined)) != null ? left : attrs;
+		const left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : null)
+		attrs = (left != null) ? left : attrs
 
 		// Extract options
-		const options = this.extractOptions(attrs);
+		const options = this.extractOptions(attrs)
 
 		// Perform the set
-		super.set(attrs, opts);
+		super.set(attrs, opts)
 
 		// Apply the options
-		this.setOptions(options, opts);
+		this.setOptions(options, opts)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -634,22 +645,22 @@ export class FileModel extends Model {
 	 * @param {Object} attrs the attributes to be applied
 	 * @param {Object} opts the options to be applied
 	 */
-	setDefaults(attrs,opts) {
+	setDefaults (attrs, opts) {
 		// Prepare
-		let left;
-		attrs = (left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : undefined)) != null ? left : attrs;
+		const left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : null)
+		attrs = left != null ? left : attrs
 
 		// Extract options
-		const options = this.extractOptions(attrs);
+		const options = this.extractOptions(attrs)
 
 		// Apply
-		super.setDefaults(attrs, opts);
+		super.setDefaults(attrs, opts)
 
 		// Apply the options
-		this.setOptions(options, opts);
+		this.setOptions(options, opts)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -659,23 +670,23 @@ export class FileModel extends Model {
 	 * @param {Object} attrs the attributes to be applied
 	 * @param {Object} opts the options to be applied
 	 */
-	setMeta(attrs,opts) {
+	setMeta (attrs, opts) {
 		// Prepare
-		let left;
-		attrs = (left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : undefined)) != null ? left : attrs;
+		const left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : null)
+		attrs = left != null ? left : attrs
 
 		// Extract options
-		const options = this.extractOptions(attrs);
+		const options = this.extractOptions(attrs)
 
 		// Apply
-		this.getMeta().set(attrs, opts);
-		this.set(attrs, opts);
+		this.getMeta().set(attrs, opts)
+		this.set(attrs, opts)
 
 		// Apply the options
-		this.setOptions(options, opts);
+		this.setOptions(options, opts)
 
 		// Chain
-		return this;
+		return this
 	}
 
 
@@ -685,23 +696,23 @@ export class FileModel extends Model {
 	 * @param {Object} attrs the attributes to be applied
 	 * @param {Object} opts the options to be applied
 	 */
-	setMetaDefaults(attrs,opts) {
+	setMetaDefaults (attrs, opts) {
 		// Prepare
-		let left;
-		attrs = (left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : undefined)) != null ? left : attrs;
+		const left = (typeof attrs.toJSON === 'function' ? attrs.toJSON() : null)
+		attrs = left != null ? left : attrs
 
 		// Extract options
-		const options = this.extractOptions(attrs);
+		const options = this.extractOptions(attrs)
 
 		// Apply
-		this.getMeta().setDefaults(attrs, opts);
-		this.setDefaults(attrs, opts);
+		this.getMeta().setDefaults(attrs, opts)
+		this.setDefaults(attrs, opts)
 
 		// Apply the options
-		this.setOptions(options, opts);
+		this.setOptions(options, opts)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -716,21 +727,24 @@ export class FileModel extends Model {
 	 * @param {Object} [opts={}]
 	 * @return {String}
 	 */
-	getFilename(opts) {
+	getFilename (opts = {}) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		const {fullPath,relativePath,filename} = opts;
+		const {fullPath, relativePath, filename} = opts
 
 		// Determine
-		let result = (filename != null ? filename : this.get('filename'));
+		let result = (filename != null ? filename : this.get('filename'))
 		if (!result) {
-			result = (fullPath != null ? fullPath : this.get('fullPath')) || (relativePath != null ? relativePath : this.get('relativePath'));
-			if (result) { result = pathUtil.basename(result); }
+			result = (fullPath != null ? fullPath : this.get('fullPath')) || (relativePath != null ? relativePath : this.get('relativePath'))
+			if (result) {
+				result = pathUtil.basename(result)
+			}
 		}
-		if (!result) { result = null; }
+		if (!result) {
+			result = null
+		}
 
-		// REturn
-		return result;
+		// Return
+		return result
 	}
 
 	/**
@@ -745,16 +759,15 @@ export class FileModel extends Model {
 	 * @param {Object} [opts={}]
 	 * @return {String}
 	 */
-	getFilePath(opts) {
+	getFilePath (opts = {}) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		const {fullPath,relativePath,filename} = opts;
+		const {fullPath, relativePath, filename} = opts
 
 		// Determine
-		const result = (fullPath != null ? fullPath : this.get('fullPath')) || (relativePath != null ? relativePath : this.get('relativePath')) || (filename != null ? filename : this.get('filename')) || null;
+		const result = (fullPath != null ? fullPath : this.get('fullPath')) || (relativePath != null ? relativePath : this.get('relativePath')) || (filename != null ? filename : this.get('filename')) || null
 
 		// Return
-		return result;
+		return result
 	}
 
 	/**
@@ -768,15 +781,17 @@ export class FileModel extends Model {
 	 * @param {Object} opts
 	 * @return {Array} array of extension names
 	 */
-	getExtensions({extensions,filename}) {
-		if (!extensions) { extensions = this.get('extensions') || null; }
+	getExtensions ({extensions, filename}) {
+		if (!extensions) {
+			extensions = this.get('extensions') || null
+		}
 		if ((extensions || []).length === 0) {
-			filename = this.getFilename({filename});
+			filename = this.getFilename({filename})
 			if (filename) {
-				extensions = docpadUtil.getExtensions(filename);
+				extensions = DocpadUtil.getExtensions(filename)
 			}
 		}
-		return extensions || null;
+		return extensions || null
 	}
 
 	/**
@@ -785,8 +800,8 @@ export class FileModel extends Model {
 	 * @method getContent
 	 * @return {String or Object}
 	 */
-	getContent() {
-		return this.get('content') || this.getBuffer();
+	getContent () {
+		return this.get('content') || this.getBuffer()
 	}
 
 	/**
@@ -794,8 +809,8 @@ export class FileModel extends Model {
 	 * @method getOutContent
 	 * @return {String or Object}
 	 */
-	getOutContent() {
-		return this.getContent();
+	getOutContent () {
+		return this.getContent()
 	}
 
 	/**
@@ -804,8 +819,8 @@ export class FileModel extends Model {
 	 * @method isText
 	 * @return {Boolean}
 	 */
-	isText() {
-		return this.get('encoding') !== 'binary';
+	isText () {
+		return this.get('encoding') !== 'binary'
 	}
 
 	/**
@@ -813,8 +828,8 @@ export class FileModel extends Model {
 	 * @method isBinary
 	 * @return {Boolean}
 	 */
-	isBinary() {
-		return this.get('encoding') === 'binary';
+	isBinary () {
+		return this.get('encoding') === 'binary'
 	}
 
 	/**
@@ -822,10 +837,10 @@ export class FileModel extends Model {
 	 * @method setUrl
 	 * @param {String} url
 	 */
-	setUrl(url) {
-		this.addUrl(url);
-		this.set({url});
-		return this;
+	setUrl (url) {
+		this.addUrl(url)
+		this.set({url})
+		return this
 	}
 
 	/**
@@ -835,30 +850,33 @@ export class FileModel extends Model {
 	 * @method addUrl
 	 * @param {String or Array} url
 	 */
-	addUrl(url) {
+	addUrl (url) {
 		// Multiple Urls
 		if (url instanceof Array) {
-			for (let newUrl of Array.from(url)) {
-				this.addUrl(newUrl);
+			for (const newUrl of url) {
+				this.addUrl(newUrl)
 			}
 
 		// Single Url
-		} else if (url) {
-			let found = false;
-			const urls = this.get('urls');
-			for (let existingUrl of Array.from(urls)) {
+		}
+		else if (url) {
+			let found = false
+			const urls = this.get('urls')
+			for (const existingUrl of urls) {
 				if (existingUrl === url) {
-					found = true;
-					break;
+					found = true
+					break
 				}
 			}
-			if (!found) { urls.push(url); }
-			this.trigger('change:urls', this, urls, {});
-			this.trigger('change', this, {});
+			if (!found) {
+				urls.push(url)
+			}
+			this.trigger('change:urls', this, urls, {})
+			this.trigger('change', this, {})
 		}
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -867,16 +885,16 @@ export class FileModel extends Model {
 	 * @method removeUrl
 	 * @param {Object} userUrl the url to be removed
 	 */
-	removeUrl(userUrl) {
-		const urls = this.get('urls');
-		for (let index = 0; index < urls.length; index++) {
-			const url = urls[index];
+	removeUrl (userUrl) {
+		const urls = this.get('urls')
+		for (let index = 0 index < urls.length index++) {
+			const url = urls[index]
 			if (url === userUrl) {
-				urls.splice(index,1);
-				break;
+				urls.splice(index, 1)
+				break
 			}
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -889,32 +907,37 @@ export class FileModel extends Model {
 	 * @param {String} parentPath
 	 * @return {String}
 	 */
-	getPath(relativePath, parentPath) {
-		let path;
+	getPath (relativePath, parentPath) {
+		let path
 		if (/^\./.test(relativePath)) {
-			const relativeDirPath = this.get('relativeDirPath');
-			path = pathUtil.join(relativeDirPath, relativePath);
-		} else {
-			if (parentPath) {
-				path = pathUtil.join(parentPath, relativePath);
-			} else {
-				path = relativePath;
-			}
+			const relativeDirPath = this.get('relativeDirPath')
+			path = pathUtil.join(relativeDirPath, relativePath)
 		}
-		return path;
+		else {
+			path = parentPath ?
+				pathUtil.join(parentPath, relativePath) :
+				relativePath
+		}
+		return path
 	}
+
 	/**
 	 * Get the action runner instance bound to DocPad
 	 * @method getActionRunner
 	 * @return {Object}
 	 */
-	getActionRunner() { return this.actionRunnerInstance; }
+	getActionRunner () {
+		return this.actionRunnerInstance
+	}
+
 	/**
 	 * Apply an action with the supplied arguments.
 	 * @method action
 	 * @param {Object} args...
 	 */
-	action(...args) { return docpadUtil.action.apply(this, args); }
+	action (...args) {
+		return DocpadUtil.action.apply(this, args)
+	}
 
 	/**
 	 * Initialize the file model with the passed
@@ -923,38 +946,51 @@ export class FileModel extends Model {
 	 * @param {Object} attrs the file model attributes
 	 * @param {Object} [opts={}] the file model options
 	 */
-	initialize(attrs,opts) {
+	initialize (attrs, opts = {}) {
 		// Defaults
-		if (opts == null) { opts = {}; }
-		const file = this;
-		if (this.attributes == null) { this.attributes = {}; }
-		if (this.attributes.extensions == null) { this.attributes.extensions = []; }
-		if (this.attributes.urls == null) { this.attributes.urls = []; }
-		const now = new Date();
-		if (this.attributes.ctime == null) { this.attributes.ctime = now; }
-		if (this.attributes.mtime == null) { this.attributes.mtime = now; }
+		const file = this
+		if (this.attributes == null) {
+			this.attributes = {}
+		}
+		if (this.attributes.extensions == null) {
+			this.attributes.extensions = []
+		}
+		if (this.attributes.urls == null) {
+			this.attributes.urls = []
+		}
+		const now = new Date()
+		if (this.attributes.ctime == null) {
+			this.attributes.ctime = now
+		}
+		if (this.attributes.mtime == null) {
+			this.attributes.mtime = now
+		}
 
 		// Id
-		if (this.id == null) { this.id = this.attributes.id != null ? this.attributes.id : (this.attributes.id = this.cid); }
+		if (this.id == null) {
+			this.id = this.attributes.id != null ? this.attributes.id : (this.attributes.id = this.cid)
+		}
 
 		// Options
-		this.setOptions(opts);
+		this.setOptions(opts)
 
 		// Error
 		if (((this.rootOutDirPath != null) === false) || ((this.locale != null) === false)) {
-			throw new Error("Use docpad.createModel to create the file or document model");
+			throw new Error('Use docpad.createModel to create the file or document model')
 		}
 
 		// Create our action runner
-		this.actionRunnerInstance = this.TaskGroup("file action runner", {abortOnError: false, destroyOnceDone: false}).whenDone(function(err) {
-			if (err) { return file.emit('error', err); }
-		});
+		this.actionRunnerInstance = this.TaskGroup('file action runner', {abortOnError: false, destroyOnceDone: false}).whenDone((err) => {
+			if (err) {
+				return file.emit('error', err)
+			}
+		})
 
 		// Apply
-		this.emit('init');
+		this.emit('init')
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -966,77 +1002,91 @@ export class FileModel extends Model {
 	 * @param {Object} [opts={}]
 	 * @param {Function} next callback
 	 */
-	load(opts,next) {
+	load (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
-		const file = this;
-		if (opts.exists == null) { opts.exists = null; }
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const file = this
+		if (opts.exists == null) {
+			opts.exists = null
+		}
 
 		// Fetch
-		const fullPath = this.get('fullPath');
-		const filePath = this.getFilePath({fullPath});
+		const fullPath = this.get('fullPath')
+		const filePath = this.getFilePath({fullPath})
 
 		// Apply options
-		if (opts.exists != null) { file.set({exists: opts.exists}); }
-		if (opts.stat != null) { file.setStat(opts.stat); }
-		if (opts.buffer != null) { file.setBuffer(opts.buffer); }
+		if (opts.exists != null) {
+			file.set({exists: opts.exists})
+		}
+		if (opts.stat != null) {
+			file.setStat(opts.stat)
+		}
+		if (opts.buffer != null) {
+			file.setBuffer(opts.buffer)
+		}
 
 		// Tasks
 		const tasks = this.TaskGroup(`load tasks for file: ${filePath}`, {next})
-			.on('item.run', item => file.log("debug", `${item.getConfig().name}: ${file.type}: ${filePath}`));
+			.on('item.run', (item) => file.log('debug', `${item.getConfig().name}: ${file.type}: ${filePath}`))
 
 		// Detect the file
-		tasks.addTask("Detect the file", function(complete) {
+		tasks.addTask('Detect the file', (complete) => {
 			if (fullPath && (opts.exists === null)) {
-				return safefs.exists(fullPath, function(exists) {
-					opts.exists = exists;
-					file.set({exists: opts.exists});
-					return complete();
-				});
-			} else {
-				return complete();
+				return safefs.exists(fullPath, (exists) => {
+					opts.exists = exists
+					file.set({exists: opts.exists})
+					return complete()
+				})
 			}
-		});
+			else {
+				return complete()
+			}
+		})
 
-		tasks.addTask("Stat the file and cache the result", function(complete) {
+		tasks.addTask('Stat the file and cache the result', (complete) => {
 			// Otherwise fetch new stat
 			if (fullPath && opts.exists && ((opts.stat != null) === false)) {
-				return safefs.stat(fullPath, function(err,fileStat) {
-					if (err) { return complete(err); }
-					file.setStat(fileStat);
-					return complete();
-				});
-			} else {
-				return complete();
+				return safefs.stat(fullPath, (err, fileStat) => {
+					if (err) {
+						return complete(err)
+					}
+					file.setStat(fileStat)
+					return complete()
+				})
 			}
-		});
+			else {
+				return complete()
+			}
+		})
 
 		// Process the file
-		tasks.addTask("Read the file and cache the result", function(complete) {
+		tasks.addTask('Read the file and cache the result', (complete) => {
 			// Otherwise fetch new buffer
 			if (fullPath && opts.exists && ((opts.buffer != null) === false) && file.isBufferOutdated()) {
-				return safefs.readFile(fullPath, function(err,buffer) {
-					if (err) { return complete(err); }
-					file.setBuffer(buffer);
-					return complete();
-				});
-			} else {
-				return complete();
+				return safefs.readFile(fullPath, (err, buffer) => {
+					if (err) {
+						return complete(err)
+					}
+					file.setBuffer(buffer)
+					return complete()
+				})
 			}
-		});
+			else {
+				return complete()
+			}
+		})
 
-		tasks.addTask("Load -> Parse", complete => file.parse(complete));
+		tasks.addTask('Load -> Parse', (complete) => file.parse(complete))
 
-		tasks.addTask("Parse -> Normalize", complete => file.normalize(complete));
+		tasks.addTask('Parse -> Normalize', (complete) => file.normalize(complete))
 
-		tasks.addTask("Normalize -> Contextualize", complete => file.contextualize(complete));
+		tasks.addTask('Normalize -> Contextualize', (complete) => file.contextualize(complete))
 
 		// Run the tasks
-		tasks.run();
+		tasks.run()
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -1046,80 +1096,85 @@ export class FileModel extends Model {
 	 * @param {Object} [opts={}]
 	 * @param {Object} next callback
 	 */
-	parse(opts,next) {
+	parse (opts = {}, next) {
 		// Prepare
-		let content, source;
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		let buffer = this.getBuffer();
-		const relativePath = this.get('relativePath');
-		let encoding = opts.encoding || this.get('encoding') || null;
-		const changes = {};
+		let content, source
+		[opts, next] = extractOptsAndCallback(opts, next)
+		let buffer = this.getBuffer()
+		const relativePath = this.get('relativePath')
+		let encoding = opts.encoding || this.get('encoding') || null
+		const changes = {}
 
 		// Detect Encoding
 		if ((buffer && ((encoding != null) === false)) || (opts.reencode === true)) {
-			const isText = isTextOrBinary.isTextSync(relativePath, buffer);
+			const isText = isTextOrBinary.isTextSync(relativePath, buffer)
 
 			// Text
 			if (isText === true) {
 				// Detect source encoding if not manually specified
 				if (this.detectEncoding) {
-					if (jschardet == null) { jschardet = require('jschardet'); }
-					if (encoding == null) { encoding = __guard__(jschardet.detect(buffer), x => x.encoding); }
+					if (jschardet == null) { jschardet = require('jschardet') }
+					if (encoding == null) { encoding = __guard__(jschardet.detect(buffer), x => x.encoding) }
 				}
 
 				// Default the encoding
-				if (!encoding) { encoding = 'utf8'; }
+				if (!encoding) {
+					encoding = 'utf8'
+				}
 
 				// Convert into utf8
-				if (docpadUtil.isStandardEncoding(encoding) === false) {
+				if (DocpadUtil.isStandardEncoding(encoding) === false) {
 					buffer = this.encode({
 						path: relativePath,
 						to: 'utf8',
 						from: encoding,
 						content: buffer
-					});
+					})
 				}
 
 				// Apply
-				changes.encoding = encoding;
+				changes.encoding = encoding
 
 			// Binary
-			} else {
+			}
+			else {
 				// Set
-				encoding = (changes.encoding = 'binary');
+				encoding = (changes.encoding = 'binary')
 			}
 		}
 
 		// Binary
 		if (encoding === 'binary') {
 			// Set
-			content = (source = '');
+			content = (source = '')
 
 			// Apply
-			changes.content = content;
-			changes.source = source;
+			changes.content = content
+			changes.source = source
 
 		// Text
-		} else {
+		}
+		else {
 			// Default
-			if ((encoding != null) === false) { encoding = (changes.encoding = 'utf8'); }
+			if ((encoding != null) === false) {
+				encoding = (changes.encoding = 'utf8')
+			}
 
 			// Set
-			source = (buffer != null ? buffer.toString('utf8') : undefined) || '';
-			content = source;
+			source = (buffer != null ? buffer.toString('utf8') : null) || ''
+			content = source
 
 			// Apply
-			changes.content = content;
-			changes.source = source;
+			changes.content = content
+			changes.source = source
 		}
 
 		// Apply
-		this.set(changes);
+		this.set(changes)
 
 		// Next
-		next();
-		return this;
+		next()
+		return this
 	}
 
 	/**
@@ -1131,101 +1186,100 @@ export class FileModel extends Model {
 	 * @param {Object} [opts={}]
 	 * @param {Object} next callback
 	 */
-	normalize(opts,next) {
+	normalize (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
-		const changes = {};
-		const meta = this.getMeta();
-		const locale = this.getLocale();
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const changes = {}
+		const meta = this.getMeta()
+		const locale = this.getLocale()
 
 		// App specified
-		let filename = opts.filename || this.get('filename') || null;
-		let relativePath = opts.relativePath || this.get('relativePath') || null;
-		const fullPath = opts.fullPath || this.get('fullPath') || null;
-		let mtime = opts.mtime || this.get('mtime') || null;
+		let filename = opts.filename || this.get('filename') || null
+		let relativePath = opts.relativePath || this.get('relativePath') || null
+		const fullPath = opts.fullPath || this.get('fullPath') || null
+		let mtime = opts.mtime || this.get('mtime') || null
 
 		// User specified
-		let tags = opts.tags || meta.get('tags') || null;
-		let date = opts.date || meta.get('date') || null;
-		let name = opts.name || meta.get('name') || null;
-		let slug = opts.slug || meta.get('slug') || null;
-		const url = opts.url || meta.get('url') || null;
-		let contentType = opts.contentType || meta.get('contentType') || null;
-		let outContentType = opts.outContentType || meta.get('outContentType') || null;
-		let outFilename = opts.outFilename || meta.get('outFilename') || null;
-		let outExtension = opts.outExtension || meta.get('outExtension') || null;
-		let outPath = opts.outPath || meta.get('outPath') || null;
+		let tags = opts.tags || meta.get('tags') || null
+		let date = opts.date || meta.get('date') || null
+		let name = opts.name || meta.get('name') || null
+		let slug = opts.slug || meta.get('slug') || null
+		const url = opts.url || meta.get('url') || null
+		let contentType = opts.contentType || meta.get('contentType') || null
+		let outContentType = opts.outContentType || meta.get('outContentType') || null
+		let outFilename = opts.outFilename || meta.get('outFilename') || null
+		let outExtension = opts.outExtension || meta.get('outExtension') || null
+		let outPath = opts.outPath || meta.get('outPath') || null
 
 		// Force specifeid
-		let extensions = null;
-		let extension = null;
-		let basename = null;
-		let outBasename = null;
-		let relativeOutPath = null;
-		let relativeDirPath = null;
-		let relativeOutDirPath = null;
-		let relativeBase = null;
-		let relativeOutBase = null;
-		let outDirPath = null;
-		let fullDirPath = null;
+		let extensions = null
+		let extension = null
+		let basename = null
+		let outBasename = null
+		let relativeOutPath = null
+		let relativeDirPath = null
+		let relativeOutDirPath = null
+		let relativeBase = null
+		let relativeOutBase = null
+		let outDirPath = null
+		let fullDirPath = null
 
 		// filename
-		changes.filename = (filename = this.getFilename({filename, relativePath, fullPath}));
+		changes.filename = (filename = this.getFilename({filename, relativePath, fullPath}))
 
 		// check
 		if (!filename) {
-			const err = new Error(locale.filenameMissingError);
-			return next(err);
+			const err = new Error(locale.filenameMissingError)
+			return next(err)
 		}
 
 		// relativePath
 		if (!relativePath && filename) {
-			changes.relativePath = (relativePath = filename);
+			changes.relativePath = (relativePath = filename)
 		}
 
 		// force basename
-		changes.basename = (basename = docpadUtil.getBasename(filename));
+		changes.basename = (basename = DocpadUtil.getBasename(filename))
 
 		// force extensions
-		changes.extensions = (extensions = this.getExtensions({filename}));
+		changes.extensions = (extensions = this.getExtensions({filename}))
 
 		// force extension
-		changes.extension = (extension = docpadUtil.getExtension(extensions));
+		changes.extension = (extension = DocpadUtil.getExtension(extensions))
 
 		// force fullDirPath
 		if (fullPath) {
-			changes.fullDirPath = (fullDirPath = docpadUtil.getDirPath(fullPath));
+			changes.fullDirPath = (fullDirPath = DocpadUtil.getDirPath(fullPath))
 		}
 
 		// force relativeDirPath
-		changes.relativeDirPath = (relativeDirPath = docpadUtil.getDirPath(relativePath));
+		changes.relativeDirPath = (relativeDirPath = DocpadUtil.getDirPath(relativePath))
 
 		// force relativeBase
 		changes.relativeBase = (relativeBase =
 			relativeDirPath ?
 				pathUtil.join(relativeDirPath, basename)
 			:
-				basename);
+				basename)
 
 		// force contentType
 		if (!contentType) {
-			changes.contentType = (contentType = mime.lookup(fullPath || relativePath));
+			changes.contentType = (contentType = mime.lookup(fullPath || relativePath))
 		}
 
 		// adjust tags
 		if (tags && (typeChecker.isArray(tags) === false)) {
-			changes.tags = (tags = String(tags).split(/[\s,]+/));
+			changes.tags = (tags = String(tags).split(/[\s,]+/))
 		}
 
 		// force date
 		if (!date) {
-			changes.date = (date = mtime || this.get('date') || new Date());
+			changes.date = (date = mtime || this.get('date') || new Date())
 		}
 
 		// force outFilename
 		if (!outFilename && !outPath) {
-			changes.outFilename = (outFilename = docpadUtil.getOutFilename(basename, outExtension || extensions.join('.')));
+			changes.outFilename = (outFilename = DocpadUtil.getOutFilename(basename, outExtension || extensions.join('.')))
 		}
 
 		// force outPath
@@ -1234,81 +1288,81 @@ export class FileModel extends Model {
 				this.rootOutDirPath ?
 					pathUtil.resolve(this.rootOutDirPath, relativeDirPath, outFilename)
 				:
-					null);
+					null)
 		}
 			// ^ we still do this set as outPath is a meta, and it may still be set as an attribute
 
 		// refresh outFilename
 		if (outPath) {
-			changes.outFilename = (outFilename = docpadUtil.getFilename(outPath));
+			changes.outFilename = (outFilename = DocpadUtil.getFilename(outPath))
 		}
 
 		// force outDirPath
 		changes.outDirPath = (outDirPath =
 			outPath ?
-				docpadUtil.getDirPath(outPath)
+				DocpadUtil.getDirPath(outPath)
 			:
-				null);
+				null)
 
 		// force outBasename
-		changes.outBasename = (outBasename = docpadUtil.getBasename(outFilename));
+		changes.outBasename = (outBasename = DocpadUtil.getBasename(outFilename))
 
 		// force outExtension
-		changes.outExtension = (outExtension = docpadUtil.getExtension(outFilename));
+		changes.outExtension = (outExtension = DocpadUtil.getExtension(outFilename))
 
 		// force relativeOutPath
 		changes.relativeOutPath = (relativeOutPath =
 			outPath ?
 				outPath.replace(this.rootOutDirPath, '').replace(/^[\/\\]/, '')
 			:
-				pathUtil.join(relativeDirPath, outFilename));
+				pathUtil.join(relativeDirPath, outFilename))
 
 		// force relativeOutDirPath
-		changes.relativeOutDirPath = (relativeOutDirPath = docpadUtil.getDirPath(relativeOutPath));
+		changes.relativeOutDirPath = (relativeOutDirPath = DocpadUtil.getDirPath(relativeOutPath))
 
 		// force relativeOutBase
-		changes.relativeOutBase = (relativeOutBase = pathUtil.join(relativeOutDirPath, outBasename));
+		changes.relativeOutBase = (relativeOutBase = pathUtil.join(relativeOutDirPath, outBasename))
 
 		// force name
 		if (!name) {
-			changes.name = (name = outFilename);
+			changes.name = (name = outFilename)
 		}
 
 		// force url
-		const _defaultUrl = docpadUtil.getUrl(relativeOutPath);
+		const _defaultUrl = DocpadUtil.getUrl(relativeOutPath)
 		if (url) {
-			this.setUrl(url);
-			this.addUrl(_defaultUrl);
+			this.setUrl(url)
+			this.addUrl(_defaultUrl)
 		} else {
-			this.setUrl(_defaultUrl);
+			this.setUrl(_defaultUrl)
 		}
 
 		// force outContentType
 		if (!outContentType && contentType) {
-			changes.outContentType = (outContentType = mime.lookup(outPath || relativeOutPath) || contentType);
+			changes.outContentType = (outContentType = mime.lookup(outPath || relativeOutPath) || contentType)
 		}
 
 		// force slug
 		if (!slug) {
-			changes.slug = (slug = docpadUtil.getSlug(relativeOutBase));
+			changes.slug = (slug = DocpadUtil.getSlug(relativeOutBase))
 		}
 
 		// Force date objects
-		if (typeof wtime === 'string') { var wtime;
-		changes.wtime = (wtime = new Date(wtime)); }
-		if (typeof rtime === 'string') { var rtime;
-		changes.rtime = (rtime = new Date(rtime)); }
-		if (typeof ctime === 'string') { var ctime;
-		changes.ctime = (ctime = new Date(ctime)); }
-		if (typeof mtime === 'string') { changes.mtime = (mtime = new Date(mtime)); }
-		if (typeof date === 'string') { changes.date  = (date  = new Date(date)); }
+		if (typeof wtime === 'string') { var wtime
+		changes.wtime = (wtime = new Date(wtime)) }
+		if (typeof rtime === 'string') { var rtime
+		changes.rtime = (rtime = new Date(rtime)) }
+		if (typeof ctime === 'string') { var ctime
+		changes.ctime = (ctime = new Date(ctime)) }
+		if (typeof mtime === 'string') { changes.mtime = (mtime = new Date(mtime)) }
+		if (typeof date === 'string') { changes.date  = (date  = new Date(date)) }
 
 		// Apply
-		this.set(changes);
+		this.set(changes)
 
 		// Next
-		next();
-		return this;
+		next()
+		return this
 	}
 
 	/**
@@ -1322,12 +1376,12 @@ export class FileModel extends Model {
 	 */
 	contextualize(opts,next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
+		if (opts == null) { opts = {} }
+		[opts,next] = Array.from(extractOptsAndCallback(opts,next))
 
 		// Forward
-		next();
-		return this;
+		next()
+		return this
 	}
 
 	/**
@@ -1342,16 +1396,16 @@ export class FileModel extends Model {
 	 */
 	render(opts,next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
+		if (opts == null) { opts = {} }
+		[opts,next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
 
 		// Apply
-		file.attributes.rtime = new Date();
+		file.attributes.rtime = new Date()
 
 		// Forward
-		next(null, file.getOutContent(), file);
-		return this;
+		next(null, file.getOutContent(), file)
+		return this
 	}
 
 
@@ -1372,22 +1426,22 @@ export class FileModel extends Model {
 	 */
 	write(opts,next) {
 		// Prepare
-		let needle;
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
-		const locale = this.getLocale();
+		let needle
+		[opts,next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
+		const locale = this.getLocale()
 
 		// Fetch
-		if (!opts.path) { opts.path = file.get('outPath'); }
-		if (!opts.encoding) { opts.encoding = file.get('encoding') || 'utf8'; }
-		if (!opts.content) { opts.content = file.getOutContent(); }
-		if (!opts.type) { opts.type = 'out file'; }
+		if (!opts.path) { opts.path = file.get('outPath') }
+		if (!opts.encoding) { opts.encoding = file.get('encoding') || 'utf8' }
+		if (!opts.content) { opts.content = file.getOutContent() }
+		if (!opts.type) { opts.type = 'out file' }
 
 		// Check
 		// Sometimes the out path could not be set if we are early on in the process
 		if (!opts.path) {
-			next();
-			return this;
+			next()
+			return this
 		}
 
 		// Convert utf8 to original encoding
@@ -1397,31 +1451,31 @@ export class FileModel extends Model {
 				to: opts.encoding,
 				from: 'utf8',
 				content: opts.content
-			});
+			})
 		}
 
 		// Log
-		file.log('debug', util.format(locale.fileWrite, opts.type, opts.path, opts.encoding));
+		file.log('debug', util.format(locale.fileWrite, opts.type, opts.path, opts.encoding))
 
 		// Write data
 		safefs.writeFile(opts.path, opts.content, function(err) {
 			// Check
-			if (err) { return next(err); }
+			if (err) { return next(err) }
 
 			// Update the wtime
 			if (opts.type === 'out file') {
-				file.attributes.wtime = new Date();
+				file.attributes.wtime = new Date()
 			}
 
 			// Log
-			file.log('debug',  util.format(locale.fileWrote, opts.type, opts.path, opts.encoding));
+			file.log('debug',  util.format(locale.fileWrote, opts.type, opts.path, opts.encoding))
 
 			// Next
-			return next();
-		});
+			return next()
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -1435,19 +1489,19 @@ export class FileModel extends Model {
 	 */
 	writeSource(opts,next) {
 		// Prepare
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
+		[opts,next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
 
 		// Fetch
-		if (!opts.path) { opts.path = file.get('fullPath'); }
-		if (!opts.content) { opts.content = (file.getContent() || '').toString(''); }
-		if (!opts.type) { opts.type = 'source file'; }
+		if (!opts.path) { opts.path = file.get('fullPath') }
+		if (!opts.content) { opts.content = (file.getContent() || '').toString('') }
+		if (!opts.type) { opts.type = 'source file' }
 
 		// Write data
-		this.write(opts, next);
+		this.write(opts, next)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -1460,44 +1514,44 @@ export class FileModel extends Model {
 	 */
 	'delete'(opts,next) {
 		// Prepare
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
-		const locale = this.getLocale();
+		[opts,next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
+		const locale = this.getLocale()
 
 		// Fetch
-		if (!opts.path) { opts.path = file.get('outPath'); }
-		if (!opts.type) { opts.type = 'out file'; }
+		if (!opts.path) { opts.path = file.get('outPath') }
+		if (!opts.type) { opts.type = 'out file' }
 
 		// Check
 		// Sometimes the out path could not be set if we are early on in the process
 		if (!opts.path) {
-			next();
-			return this;
+			next()
+			return this
 		}
 
 		// Log
-		file.log('debug',  util.format(locale.fileDelete, opts.type, opts.path));
+		file.log('debug',  util.format(locale.fileDelete, opts.type, opts.path))
 
 		// Check existance
 		safefs.exists(opts.path, function(exists) {
 			// Exit if it doesn't exist
-			if (!exists) { return next(); }
+			if (!exists) { return next() }
 
 			// If it does exist delete it
 			return safefs.unlink(opts.path, function(err) {
 				// Check
-				if (err) { return next(err); }
+				if (err) { return next(err) }
 
 				// Log
-				file.log('debug', util.format(locale.fileDeleted, opts.type, opts.path));
+				file.log('debug', util.format(locale.fileDeleted, opts.type, opts.path))
 
 				// Next
-				return next();
-			});
-		});
+				return next()
+			})
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -1510,18 +1564,17 @@ export class FileModel extends Model {
 	 */
 	deleteSource(opts,next) {
 		// Prepare
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
+		[opts,next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
 
 		// Fetch
-		if (!opts.path) { opts.path = file.get('fullPath'); }
-		if (!opts.type) { opts.type = 'source file'; }
+		if (!opts.path) { opts.path = file.get('fullPath') }
+		if (!opts.type) { opts.type = 'source file' }
 
 		// Write data
-		this.delete(opts, next);
+		this.delete(opts, next)
 
 		// Chain
-		return this;
+		return this
 	}
 }
-FileModel.initClass();

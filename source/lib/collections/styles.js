@@ -33,11 +33,8 @@ export class StylesCollection extends ElementsCollection {
 	 * @param {Object} opts
 	 * @returns {null}
 	 */
-	add (values, opts) {
+	add (values, opts = {}) {
 		// Prepare
-		if (!opts) {
-			opts = {}
-		}
 		if (!opts.attrs) {
 			opts.attrs = ''
 		}

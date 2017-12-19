@@ -28,13 +28,14 @@ import {Collection, Model} from '../base'
  * @extends Collection
  */
 export class ElementsCollection extends Collection {
-	static initClass () {
+	constructor () {
+		super()
 
 		/**
 		 * Base Model for all items in this collection
 		 * @property {Object} model
 		 */
-		this.prototype.model = Model
+		this.model = Model
 	}
 
 	/**
@@ -100,6 +101,7 @@ export class ElementsCollection extends Collection {
 	}
 
 	// Join alias toHTML for b/c
-	join () { return this.toHTML() }
+	join () {
+		return this.toHTML()
+	}
 }
-ElementsCollection.initClass()

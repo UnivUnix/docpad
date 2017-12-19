@@ -11,22 +11,19 @@
 // Requires
 
 // Standard Library
-const util = require('util');
-const pathUtil = require('path');
-const docpadUtil = require('../util');
+import * as util from 'util'
+import * as pathUtil from 'path'
+import {DocpadUtil} from '../util'
 
 // External
-const CSON = require('cson');
-const extendr = require('extendr');
-const eachr = require('eachr');
-const extractOptsAndCallback = require('extract-opts');
+import * as CSON from 'cson'
+import * as YAML from 'yamljs'
+import * as extendr from 'extendr'
+import * as eachr from 'eachr'
+import * as extractOptsAndCallback from 'extract-opts'
 
 // Local
-const FileModel = require('./file');
-
-// Optional
-let YAML = null;
-
+import {FileModel} from './file'
 
 // =====================================
 // Classes
@@ -74,82 +71,83 @@ let YAML = null;
  * @constructor
  * @extends FileModel
  */
-class DocumentModel extends FileModel {
-	static initClass() {
-	
+export class DocumentModel extends FileModel {
+	constructor () {
+		super()
+
 		// ---------------------------------
 		// Properties
-	
+
 		/**
 		 * The document model class.
 		 * @private
 		 * @property {Object} klass
 		 */
-		this.prototype.klass = DocumentModel;
-	
+		this.klass = DocumentModel
+
 		/**
 		 * String name of the model type.
 		 * In this case, 'document'.
 		 * @private
 		 * @property {String} type
 		 */
-		this.prototype.type = 'document';
-	
-	
+		this.type = 'document'
+
+
 		// ---------------------------------
 		// Attributes
-	
+
 		/**
 		 * The default attributes for any document model.
 		 * @private
 		 * @property {Object}
 		 */
-		this.prototype.defaults = extendr.extend({}, FileModel.prototype.defaults, {
-	
+		this.defaults = extendr.extend({}, FileModel.prototype.defaults, {
+
 			// ---------------------------------
 			// Special variables
-	
+
 			// outExtension
 			// The final extension used for our file
 			// Takes into accounts layouts
 			// "layout.html", "post.md.eco" -> "html"
 			// already defined in file.coffee
-	
+
 			// Whether or not we reference other doucments
 			referencesOthers: false,
-	
-	
+
+
 			// ---------------------------------
 			// Content variables
-	
+
 			// The file meta data (header) in string format before it has been parsed
 			header: null,
-	
+
 			// The parser to use for the file's meta data (header)
 			parser: null,
-	
+
 			// The file content (body) before rendering, excludes the meta data (header)
 			body: null,
-	
+
 			// Have we been rendered yet?
 			rendered: false,
-	
+
 			// The rendered content (after it has been wrapped in the layouts)
 			contentRendered: null,
-	
+
 			// The rendered content (before being passed through the layouts)
 			contentRenderedWithoutLayouts: null,
-	
-	
+
+
 			// ---------------------------------
 			// User set variables
-	
+
 			// Whether or not we should render this file
 			render: true,
-	
+
 			// Whether or not we want to render single extensions
 			renderSingleExtensions: false
-		});
+		})
 	}
 
 
@@ -166,9 +164,9 @@ class DocumentModel extends FileModel {
 	 * @method getOutContent
 	 * @return {String or Object}
 	 */
-	getOutContent() {
-		const content = this.get('contentRendered') || this.getContent();
-		return content;
+	getOutContent () {
+		const content = this.get('contentRendered') || this.getContent()
+		return content
 	}
 
 	/**
@@ -180,10 +178,9 @@ class DocumentModel extends FileModel {
 	 * @method referencesOthers
 	 * @param {Boolean} [flag=true]
 	 */
-	referencesOthers(flag) {
-		if (flag == null) { flag = true; }
-		this.set({referencesOthers:flag});
-		return this;
+	referencesOthers (flag = true) {
+		this.set({referencesOthers: flag})
+		return this
 	}
 
 
@@ -197,25 +194,24 @@ class DocumentModel extends FileModel {
 	 * @param {Object} [opts={}]
 	 * @param {Object} next callback
 	 */
-	parse(opts,next) {
+	parse (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
-		const buffer = this.getBuffer();
-		const locale = this.getLocale();
-		const filePath = this.getFilePath();
+		[opts, next] = Array.from(extractOptsAndCallback(opts, next))
+		const buffer = this.getBuffer()
+		const locale = this.getLocale()
+		const filePath = this.getFilePath()
 
 		// Reparse the data and extract the content
 		// With the content, fetch the new meta data, header, and body
 		super.parse(opts, () => {
 			// Prepare
-			let body, content, header;
-			const meta = this.getMeta();
-			const metaDataChanges = {};
-			let parser = (header = (body = (content = null)));
+			let body, content, header
+			const meta = this.getMeta()
+			const metaDataChanges = {}
+			let parser = (header = (body = (content = null)))
 
 			// Content
-			content = this.get('content').replace(/\r\n?/gm,'\n');  // normalise line endings for the web, just for convience, if it causes problems we can remove
+			content = this.get('content').replace(/\r\n?/gm, '\n')  // normalise line endings for the web, just for convience, if it causes problems we can remove
 
 			// Header
 			const regex = new RegExp(`\
@@ -252,19 +248,19 @@ class DocumentModel extends FileModel {
 \
 \
 [^\\n]*\
-`);
+`)
 
 			// Extract Meta Data
-			const match = regex.exec(content);
+			const match = regex.exec(content)
 			if (match) {
 				// TODO: Wipe the old meta data
 
 				// Prepare
-				let err;
-				const seperator = match[1];
-				parser = match[3] || 'yaml';
-				header = match[4].trim();
-				body = content.substring(match[0].length).trim();
+				let err, metaParseResult
+				const seperator = match[1]
+				parser = match[3] || 'yaml'
+				header = match[4].trim()
+				body = content.substring(match[0].length).trim()
 
 				// Parse
 				try {
@@ -272,49 +268,52 @@ class DocumentModel extends FileModel {
 						case 'cson': case 'json': case 'coffee': case 'coffeescript': case 'coffee-script': case 'js': case 'javascript':
 							switch (parser) {
 								case 'coffee': case 'coffeescript': case 'coffee-script':
-									parser = 'coffeescript';
-									break;
+									parser = 'coffeescript'
+									break
 								case 'js': case 'javascript':
-									parser = 'javascript';
-									break;
+									parser = 'javascript'
+									break
+								default :
+									break
 							}
 
-							var csonOptions = {
+							const csonOptions = {
 								format: parser,
 								json: true,
 								cson: true,
 								coffeescript: true,
 								javascript: true
-							};
-
-							var metaParseResult = CSON.parseString(header, csonOptions);
-							if (metaParseResult instanceof Error) {
-								metaParseResult.context = `Failed to parse ${parser} meta header for the file: ${filePath}`;
-								return next(metaParseResult);
 							}
 
-							extendr.extend(metaDataChanges, metaParseResult);
-							break;
+							metaParseResult = CSON.parseString(header, csonOptions)
+							if (metaParseResult instanceof Error) {
+								metaParseResult.context = `Failed to parse ${parser} meta header for the file: ${filePath}`
+								return next(metaParseResult)
+							}
+
+							extendr.extend(metaDataChanges, metaParseResult)
+							break
 
 						case 'yaml':
-							if (!YAML) { YAML = require('yamljs'); }
 							metaParseResult = YAML.parse(
-								header.replace(/\t/g,'    ')  // YAML doesn't support tabs that well
-							);
-							extendr.extend(metaDataChanges, metaParseResult);
-							break;
+								header.replace(/\t/g, '    ')  // YAML doesn't support tabs that well
+							)
+							extendr.extend(metaDataChanges, metaParseResult)
+							break
 
 						default:
-							err = new Error(util.format(locale.documentMissingParserError, parser, filePath));
-							return next(err);
+							err = new Error(util.format(locale.documentMissingParserError, parser, filePath))
+							return next(err)
 					}
-				} catch (error) {
-					err = error;
-					err.context = util.format(locale.documentParserError, parser, filePath);
-					return next(err);
 				}
-			} else {
-				body = content;
+				catch (error) {
+					err = error
+					err.context = util.format(locale.documentParserError, parser, filePath)
+					return next(err)
+				}
+			}
+			else {
+				body = content
 			}
 
 			// Incorrect encoding detection?
@@ -322,13 +321,13 @@ class DocumentModel extends FileModel {
 			if (metaDataChanges.encoding && (metaDataChanges.encoding !== this.get('encoding'))) {
 				this.set({
 					encoding: metaDataChanges.encoding
-				});
-				opts.reencode = true;
-				return this.parse(opts, next);
+				})
+				opts.reencode = true
+				return this.parse(opts, next)
 			}
 
 			// Update meta data
-			body = body.replace(/^\n+/,'');
+			body = body.replace(/^\n+/, '')
 			this.set({
 				source: content,
 				content: body,
@@ -336,44 +335,50 @@ class DocumentModel extends FileModel {
 				body,
 				parser,
 				name: this.get('name') || this.get('title') || this.get('basename')
-			});
+			})
 
 			// Correct data format
-			if (metaDataChanges.date) { metaDataChanges.date = new Date(metaDataChanges.date); }
+			if (metaDataChanges.date) {
+				metaDataChanges.date = new Date(metaDataChanges.date)
+			}
 
 			// Correct ignore
-			for (var key of ['ignore','skip','draft']) {
+			for (const key of ['ignore', 'skip', 'draft']) {
 				if (metaDataChanges[key] != null) {
-					metaDataChanges.ignored = (metaDataChanges[key] != null ? metaDataChanges[key] : false);
-					delete metaDataChanges[key];
+					metaDataChanges.ignored = (metaDataChanges[key] != null ? metaDataChanges[key] : false)
+					delete metaDataChanges[key]
 				}
 			}
-			for (key of ['published']) {
+			for (const key of ['published']) {
 				if (metaDataChanges[key] != null) {
-					metaDataChanges.ignored = !(metaDataChanges[key] != null ? metaDataChanges[key] : false);
-					delete metaDataChanges[key];
+					metaDataChanges.ignored = !(metaDataChanges[key] != null ? metaDataChanges[key] : false)
+					delete metaDataChanges[key]
 				}
 			}
 
 			// Handle urls
-			if (metaDataChanges.urls) { this.addUrl(metaDataChanges.urls); }
-			if (metaDataChanges.url) { this.setUrl(metaDataChanges.url); }
+			if (metaDataChanges.urls) {
+				this.addUrl(metaDataChanges.urls)
+			}
+			if (metaDataChanges.url) {
+				this.setUrl(metaDataChanges.url)
+			}
 
 			// Check if the id was being over-written
 			if (metaDataChanges.id != null) {
-				this.log('warn', util.format(locale.documentIdChangeError, filePath));
-				delete metaDataChanges.id;
+				this.log('warn', util.format(locale.documentIdChangeError, filePath))
+				delete metaDataChanges.id
 			}
 
 			// Apply meta data
-			this.setMeta(metaDataChanges);
+			this.setMeta(metaDataChanges)
 
 			// Next
-			return next();
-		});
+			return next()
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -385,28 +390,27 @@ class DocumentModel extends FileModel {
 	 * @param {Object} [opts={}]
 	 * @param {Object} next callback
 	 */
-	normalize(opts,next) {
+	normalize (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
-		const changes = {};
-		const meta = this.getMeta();
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const changes = {}
+		const meta = this.getMeta()
 
 		// Extract
-		let outExtension = opts.outExtension || meta.get('outExtension') || null;
-		const filename = opts.filename || this.get('filename') || null;
-		const extensions = this.getExtensions({filename}) || null;
+		let outExtension = opts.outExtension || meta.get('outExtension') || null
+		const filename = opts.filename || this.get('filename') || null
+		const extensions = this.getExtensions({filename}) || null
 
 		// Extension Rendered
 		if (!outExtension) {
-			changes.outExtension = (outExtension = extensions[0] || null);
+			changes.outExtension = (outExtension = extensions[0] || null)
 		}
 
 		// Forward
-		super.normalize(extendr.extend(opts, changes), next);
+		super.normalize(extendr.extend(opts, changes), next)
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -418,44 +422,46 @@ class DocumentModel extends FileModel {
 	 * @param {Object} [opts={}]
 	 * @param {Object} next callback
 	 */
-	contextualize(opts,next) {
+	contextualize (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts,next));
-		console.log("Document.contextualize: -> opts:");
-		console.log(opts);
-		console.log(`Document.contextualize: -> next:${next}`);
+		[opts, next] = extractOptsAndCallback(opts, next)
+		console.log("Document.contextualize: -> opts:")
+		console.log(opts)
+		console.log(`Document.contextualize: -> next:${next}`)
 
 		// Get our highest ancestor
-		this.getEve((err,eve) => {
+		this.getEve((err, eve) => {
 			// Prepare
-			if (err) { return next(err); }
-			const changes = {};
-			const meta = this.getMeta();
+			if (err) {
+				return next(err)
+			}
+			const changes = {}
+			const meta = this.getMeta()
 
 			// User specified
-			const outFilename = opts.outFilename || meta.get('outFilename') || null;
-			const outPath = opts.outPath || meta.get('outPath') || null;
-			let outExtension = opts.outExtension || meta.get('outExtension') || null;
-			const extensions = this.getExtensions({filename:outFilename}) || null;
+			const outFilename = opts.outFilename || meta.get('outFilename') || null
+			const outPath = opts.outPath || meta.get('outPath') || null
+			let outExtension = opts.outExtension || meta.get('outExtension') || null
+			const extensions = this.getExtensions({filename: outFilename}) || null
 
 			// outExtension
 			if (!outExtension) {
 				if (!outFilename && !outPath) {
 					if (eve != null) {
-						changes.outExtension = (outExtension = eve.get('outExtension') || extensions[0] || null);
-					} else {
-						changes.outExtension = extensions[0] || null;
+						changes.outExtension = (outExtension = eve.get('outExtension') || extensions[0] || null)
+					}
+					else {
+						changes.outExtension = extensions[0] || null
 					}
 				}
 			}
 
 			// Forward onto normalize to adjust for the outExtension change
-			return this.normalize(extendr.extend(opts, changes), next);
-		});
+			return this.normalize(extendr.extend(opts, changes), next)
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 
@@ -467,8 +473,8 @@ class DocumentModel extends FileModel {
 	 * @method hasLayout
 	 * @return {Boolean}
 	 */
-	hasLayout() {
-		return (this.get('layout') != null);
+	hasLayout () {
+		return (this.get('layout') != null)
 	}
 
 	// Get Layout
@@ -482,38 +488,42 @@ class DocumentModel extends FileModel {
 	 * @method getLayout
 	 * @param {Function} next callback
 	 */
-	getLayout(next) {
+	getLayout (next) {
 		// Prepare
-		const file = this;
-		const layoutSelector = this.get('layout');
+		const file = this
+		const layoutSelector = this.get('layout')
 
 		// Check
-		if (!layoutSelector) { return next(null, null); }
+		if (!layoutSelector) {
+			return next(null, null)
+		}
 
 		// Find parent
-		this.emit('getLayout', {selector:layoutSelector}, function(err,opts) {
+		this.emit('getLayout', {selector: layoutSelector}, (err, opts) => {
 			// Prepare
-			const {layout} = opts;
+			const {layout} = opts
 
 			// Error
 			if (err) {
-				file.set({'layoutRelativePath': null});
-				return next(err);
+				file.set({layoutRelativePath: null})
+				return next(err)
 
 			// Not Found
-			} else if (!layout) {
-				file.set({'layoutRelativePath': null});
-				return next();
+			}
+			else if (!layout) {
+				file.set({layoutRelativePath: null})
+				return next()
 
 			// Found
-			} else {
-				file.set({'layoutRelativePath': layout.get('relativePath')});
-				return next(null, layout);
 			}
-		});
+			else {
+				file.set({layoutRelativePath: layout.get('relativePath')})
+				return next(null, layout)
+			}
+		})
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -532,21 +542,24 @@ class DocumentModel extends FileModel {
 	 * @method getEve
 	 * @param {Function} next
 	 */
-	getEve(next) {
+	getEve (next) {
 		if (this.hasLayout()) {
-			this.getLayout(function(err,layout) {
+			this.getLayout((err, layout) => {
 				if (err) {
-					return next(err, null);
-				} else if (layout) {
-					return layout.getEve(next);
-				} else {
-					return next(null, null);
+					return next(err, null)
 				}
-			});
-		} else {
-			next(null, this);
+				else if (layout) {
+					return layout.getEve(next)
+				}
+				else {
+					return next(null, null)
+				}
+			})
 		}
-		return this;
+		else {
+			next(null, this)
+		}
+		return this
 	}
 
 
@@ -571,53 +584,61 @@ class DocumentModel extends FileModel {
 	 * @param {Object} opts
 	 * @param {Function} next callback
 	 */
-	renderExtensions(opts,next) {
+	renderExtensions (opts, next) {
 		// Prepare
-		const file = this;
-		const locale = this.getLocale();
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		let {content,templateData,renderSingleExtensions} = opts;
-		const extensions = this.get('extensions');
-		const filename = this.get('filename');
-		const filePath = this.getFilePath();
-		if (content == null) { content = this.get('body'); }
-		if (templateData == null) { templateData = {}; }
-		if (renderSingleExtensions == null) { renderSingleExtensions = this.get('renderSingleExtensions'); }
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const file = this
+		const locale = this.getLocale()
+		let {content, templateData, renderSingleExtensions} = opts
+		const extensions = this.get('extensions')
+		const filename = this.get('filename')
+		const filePath = this.getFilePath()
+		if (content == null) {
+			content = this.get('body')
+		}
+		if (templateData == null) {
+			templateData = {}
+		}
+		if (renderSingleExtensions == null) {
+			renderSingleExtensions = this.get('renderSingleExtensions')
+		}
 
 		// Prepare result
-		let result = content;
+		let result = content
 
 		// Prepare extensions
-		const extensionsReversed = [];
+		const extensionsReversed = []
 		if ((extensions.length === 0) && filename) {
-			extensionsReversed.push(filename);
+			extensionsReversed.push(filename)
 		}
-		for (let extension of Array.from(extensions)) {
-			extensionsReversed.unshift(extension);
+		for (const extension of Array.from(extensions)) {
+			extensionsReversed.unshift(extension)
 		}
 
 		// If we want to allow rendering of single extensions, then add null to the extension list
 		if (renderSingleExtensions && (extensionsReversed.length === 1)) {
-			if ((renderSingleExtensions !== 'auto') || (filename.replace(/^\./,'') === extensionsReversed[0])) {
-				extensionsReversed.push(null);
+			if ((renderSingleExtensions !== 'auto') || (filename.replace(/^\./, '') === extensionsReversed[0])) {
+				extensionsReversed.push(null)
 			}
 		}
 
 		// If we only have one extension, then skip ahead to rendering layouts
-		if (extensionsReversed.length <= 1) { return next(null, result); }
+		if (extensionsReversed.length <= 1) {
+			return next(null, result)
+		}
 
 		// Prepare the tasks
-		const tasks = this.TaskGroup(`renderExtensions: ${filePath}`, { next(err) {
-			// Forward with result
-			return next(err, result);
-		}
-	}
-		);
+		const tasks = this.TaskGroup(`renderExtensions: ${filePath}`, {
+			next (err) {
+				// Forward with result
+				return next(err, result)
+			}
+		})
 
 		// Cycle through all the extension groups and render them
-		eachr(extensionsReversed.slice(1), (extension,index) =>
+		eachr(extensionsReversed.slice(1), (extension, index) =>
 			// Task
-			tasks.addTask(`renderExtension: ${filePath} [${extensionsReversed[index]} => ${extension}]`, function(complete) {
+			tasks.addTask(`renderExtension: ${filePath} [${extensionsReversed[index]} => ${extension}]`, (complete) => {
 				// Prepare
 				// eventData must be defined in the task
 				// definining it in the above loop will cause eventData to persist between the tasks... very strange, but it happens
@@ -628,33 +649,35 @@ class DocumentModel extends FileModel {
 					templateData,
 					file,
 					content: result
-				};
+				}
 
 				// Render
-				return file.trigger('render', eventData, function(err) {
+				return file.trigger('render', eventData, (err) => {
 					// Check
-					if (err) { return complete(err); }
+					if (err) {
+						return complete(err)
+					}
 
 					// Check if the render did anything
 					// and only check if we actually have content to render!
 					// if this check fails, error with a suggestion
 					if (result && (result === eventData.content)) {
-						file.log('warn', util.format(locale.documentRenderExtensionNoChange, eventData.inExtension, eventData.outExtension, filePath));
-						return complete();
+						file.log('warn', util.format(locale.documentRenderExtensionNoChange, eventData.inExtension, eventData.outExtension, filePath))
+						return complete()
 					}
 
 					// The render did something, so apply and continue
-					result = eventData.content;
-					return complete();
-				});
+					result = eventData.content
+					return complete()
+				})
 			})
-		);
+		)
 
 		// Run tasks synchronously
-		tasks.run();
+		tasks.run()
 
 		// Chain
-		return this;
+		return this
 	}
 
 	/**
@@ -667,26 +690,30 @@ class DocumentModel extends FileModel {
 	 * @param {Object} opts
 	 * @param {Function} next callback
 	 */
-	renderDocument(opts,next) {
+	renderDocument (opts, next) {
 		// Prepare
-		const file = this;
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		let {content,templateData} = opts;
-		const extension = this.get('extensions')[0];
-		if (content == null) { content = this.get('body'); }
-		if (templateData == null) { templateData = {}; }
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const file = this
+		let {content, templateData} = opts
+		const extension = this.get('extensions')[0]
+		if (content == null) {
+			content = this.get('body')
+		}
+		if (templateData == null) {
+			templateData = {}
+		}
 
 		// Prepare event data
-		const eventData = {extension,templateData,file,content};
+		const eventData = {extension, templateData, file, content}
 
 		// Render via plugins
-		file.trigger('renderDocument', eventData, err =>
+		file.trigger('renderDocument', eventData, (err) =>
 			// Forward
 			next(err, eventData.content)
-		);
+		)
 
 		// Chain
-		return this;
+		return this
 	}
 
 
@@ -701,44 +728,52 @@ class DocumentModel extends FileModel {
 	 * @param {Object} opts
 	 * @param {Function} next callback
 	 */
-	renderLayouts(opts,next) {
+	renderLayouts (opts, next) {
 		// Prepare
-		const file = this;
-		const locale = this.getLocale();
-		const filePath = this.getFilePath();
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		let {content,templateData} = opts;
-		if (content == null) { content = this.get('body'); }
-		if (templateData == null) { templateData = {}; }
+		[opts, next] = Array.from(extractOptsAndCallback(opts, next))
+		const file = this
+		const locale = this.getLocale()
+		const filePath = this.getFilePath()
+		let {content, templateData} = opts
+		if (content == null) {
+			content = this.get('body')
+		}
+		if (templateData == null) {
+			templateData = {}
+		}
 
 		// Grab the layout
-		return file.getLayout(function(err, layout) {
+		return file.getLayout((err, layout) => {
 			// Check
-			if (err) { return next(err, content); }
+			if (err) {
+				return next(err, content)
+			}
 
 			// We have a layout to render
 			if (layout) {
 				// Assign the current rendering to the templateData.content
-				templateData.content = content;
+				templateData.content = content
 
 				// Merge in the layout meta data into the document JSON
 				// and make the result available via documentMerged
 				// templateData.document.metaMerged = extendr.extend({}, layout.getMeta().toJSON(), file.getMeta().toJSON())
 
 				// Render the layout with the templateData
-				return layout.clone().action('render', {templateData}, (err,result) => next(err, result));
+				return layout.clone().action('render', {templateData}, (err, result) => next(err, result))
 
 			// We had a layout, but it is missing
-			} else if (file.hasLayout()) {
-				const layoutSelector = file.get('layout');
-				err = new Error(util.format(locale.documentMissingLayoutError, layoutSelector, filePath));
-				return next(err, content);
+			}
+			else if (file.hasLayout()) {
+				const layoutSelector = file.get('layout')
+				err = new Error(util.format(locale.documentMissingLayoutError, layoutSelector, filePath))
+				return next(err, content)
 
 			// We never had a layout
-			} else {
-				return next(null, content);
 			}
-		});
+			else {
+				return next(null, content)
+			}
+		})
 	}
 
 	/**
@@ -756,39 +791,46 @@ class DocumentModel extends FileModel {
 	 * @param {Object} [opts={}]
 	 * @param {Function} next callback
 	 */
-	render(opts,next) {
+	render (opts = {}, next) {
 		// Prepare
-		if (opts == null) { opts = {}; }
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
-		const locale = this.getLocale();
+		[opts, next] = extractOptsAndCallback(opts, next)
+		const file = this
+		const locale = this.getLocale()
 
 		// Prepare variables
-		let contentRenderedWithoutLayouts = null;
-		const filePath = this.getFilePath();
-		const relativePath = file.get('relativePath');
+		let contentRenderedWithoutLayouts = null
+		const filePath = this.getFilePath()
+		const relativePath = file.get('relativePath')
 
 		// Options
-		opts = extendr.clone(opts || {});
-		if (opts.actions == null) { opts.actions = ['renderExtensions', 'renderDocument', 'renderLayouts']; }
+		opts = extendr.clone(opts)
+		if (opts.actions == null) {
+			opts.actions = ['renderExtensions', 'renderDocument', 'renderLayouts']
+		}
 		if (opts.apply != null) {
-			const err = new Error(locale.documentApplyError);
-			return next(err);
+			const err = new Error(locale.documentApplyError)
+			return next(err)
 		}
 
 		// Prepare content
-		if (opts.content == null) { opts.content = file.get('body'); }
+		if (opts.content == null) {
+			opts.content = file.get('body')
+		}
 
 		// Prepare templateData
-		opts.templateData = extendr.clone(opts.templateData || {});  // deepClone may be more suitable
-		if (opts.templateData.document == null) { opts.templateData.document = file.toJSON(); }
-		if (opts.templateData.documentModel == null) { opts.templateData.documentModel = file; }
+		opts.templateData = extendr.clone(opts.templateData || {})  // deepClone may be more suitable
+		if (opts.templateData.document == null) {
+			opts.templateData.document = file.toJSON()
+		}
+		if (opts.templateData.documentModel == null) {
+			opts.templateData.documentModel = file
+		}
 
 		// Ensure template helpers are bound correctly
-		for (let key of Object.keys(opts.templateData || {})) {
-			const value = opts.templateData[key];
-			if ((value != null ? value.bind : undefined) === Function.prototype.bind) {  // we do this style of check, as underscore is a function that has it's own bind
-				opts.templateData[key] = value.bind(opts.templateData);
+		for (const key of Object.keys(opts.templateData || {})) {
+			const value = opts.templateData[key]
+			if ((value != null ? value.bind : null) === Function.prototype.bind) {  // we do this style of check, as underscore is a function that has it's own bind
+				opts.templateData[key] = value.bind(opts.templateData)
 			}
 		}
 
@@ -796,94 +838,102 @@ class DocumentModel extends FileModel {
 		// file.set({contentRendered:null, contentRenderedWithoutLayouts:null, rendered:false})
 
 		// Log
-		file.log('debug', util.format(locale.documentRender, filePath));
+		file.log('debug', util.format(locale.documentRender, filePath))
 
 		// Prepare the tasks
 		const tasks = this.TaskGroup({
 			name: 'render tasks for: #{relativePath}',
-			next(err) {
+			next (err) {
 				// Error?
 				if (err) {
-					err.context = util.format(locale.documentRenderError, filePath);
-					return next(err, opts.content, file);
+					err.context = util.format(locale.documentRenderError, filePath)
+					return next(err, opts.content, file)
 				}
 
 				// Attributes
-				const contentRendered = opts.content;
-				if (contentRenderedWithoutLayouts == null) { contentRenderedWithoutLayouts = contentRendered; }
-				const rendered = true;
-				file.set({contentRendered, contentRenderedWithoutLayouts, rendered});
+				const contentRendered = opts.content
+				if (contentRenderedWithoutLayouts == null) {
+					contentRenderedWithoutLayouts = contentRendered
+				}
+				const rendered = true
+				file.set({contentRendered, contentRenderedWithoutLayouts, rendered})
 
 				// Log
-				file.log('debug', util.format(locale.documentRendered, filePath));
+				file.log('debug', util.format(locale.documentRendered, filePath))
 
 				// Apply
-				file.attributes.rtime = new Date();
+				file.attributes.rtime = new Date()
 
 				// Success
-				return next(null, opts.content, file);
+				return next(null, opts.content, file)
 			}
-				// ^ do not use super here, even with =>
-				// as it causes layout rendering to fail
-				// the reasoning for this is that super uses the document's contentRendered
-				// where, with layouts, opts.apply is false
-				// so that isn't set
-		});
+			// ^ do not use super here, even with =>
+			// as it causes layout rendering to fail
+			// the reasoning for this is that super uses the document's contentRendered
+			// where, with layouts, opts.apply is false
+			// so that isn't set
+		})
 
 		// Render Extensions Task
-		if (Array.from(opts.actions).includes('renderExtensions')) {
-			tasks.addTask(`renderExtensions: ${relativePath}`, complete =>
-				file.renderExtensions(opts, function(err,result) {
+		if (opts.actions.includes('renderExtensions')) {
+			tasks.addTask(`renderExtensions: ${relativePath}`, (complete) =>
+				file.renderExtensions(opts, (err, result) => {
 					// Check
-					if (err) { return complete(err); }
+					if (err) {
+						return complete(err)
+					}
 
 					// Apply the result
-					opts.content = result;
+					opts.content = result
 
 					// Done
-					return complete();
+					return complete()
 				})
-			);
+			)
 		}
 
 		// Render Document Task
-		if (Array.from(opts.actions).includes('renderDocument')) {
-			tasks.addTask(`renderDocument: ${relativePath}`, complete =>
-				file.renderDocument(opts, function(err,result) {
+		if (opts.actions.includes('renderDocument')) {
+			tasks.addTask(`renderDocument: ${relativePath}`, (complete) =>
+				file.renderDocument(opts, (err, result) => {
 					// Check
-					if (err) { return complete(err); }
+					if (err) {
+						return complete(err)
+					}
 
 					// Apply the result
-					opts.content = result;
-					contentRenderedWithoutLayouts = result;
+					opts.content = result
+					contentRenderedWithoutLayouts = result
 
 					// Done
-					return complete();
+					return complete()
 				})
-			);
+			)
 		}
 
 		// Render Layouts Task
-		if (Array.from(opts.actions).includes('renderLayouts')) {
-			tasks.addTask(`renderLayouts: ${relativePath}`, complete =>
-				file.renderLayouts(opts, function(err,result) {
+		if (opts.actions.includes('renderLayouts')) {
+			tasks.addTask(`renderLayouts: ${relativePath}`, (complete) =>
+				file.renderLayouts(opts, (err, result) => {
 					// Check
-					if (err) { return complete(err); }
+					if (err) {
+						return complete(err)
+					}
 
 					// Apply the result
-					opts.content = result;
+					opts.content = result
 
 					// Done
-					return complete();
+					return complete()
 				})
-			);
+			)
 		}
 
 		// Fire the tasks
-		tasks.run();
+		tasks.run()
 
 		// Chain
-		return this;
+		return this
 	}
 
 
@@ -899,52 +949,50 @@ class DocumentModel extends FileModel {
 	 * @param {Object} [opts]
 	 * @param {Object} next callback
 	 */
-	writeSource(opts,next) {
+	writeSource (opts, next) {
 		// Prepare
-		let body, source;
-		[opts,next] = Array.from(extractOptsAndCallback(opts, next));
-		const file = this;
-		const filePath = this.getFilePath();
+		[opts, next] = extractOptsAndCallback(opts, next)
+		let body, source
+		const file = this
+		const filePath = this.getFilePath()
 
 		// Fetch
-		if (opts.content == null) { opts.content = (this.getContent() || '').toString(''); }
+		if (opts.content == null) {
+			opts.content = (this.getContent() || '').toString('')
+		}
 
 		// Adjust
-		const metaData  = this.getMeta().toJSON(true);
-		delete metaData.writeSource;
-		const content   = (body = opts.content.replace(/^\s+/,''));
-		const header    = CSON.stringify(metaData);
+		const metaData  = this.getMeta().toJSON(true)
+		delete metaData.writeSource
+		const content   = (body = opts.content.replace(/^\s+/, ''))
+		const header    = CSON.stringify(metaData)
 
 		if (header instanceof Error) {
-			header.context = `Failed to write CSON meta header for the file: ${filePath}`;
-			return next(header);
+			header.context = `Failed to write CSON meta header for the file: ${filePath}`
+			return next(header)
 		}
 
 		if (!header || (header === '{}')) {
 			// No meta data
-			source    = body;
-		} else {
+			source    = body
+		}
+		else {
 			// Has meta data
-			const parser    = 'cson';
-			const seperator = '###';
-			source    = `${seperator} ${parser}\n${header}\n${seperator}\n\n${body}`;
+			const parser    = 'cson'
+			const seperator = '###'
+			source    = `${seperator} ${parser}\n${header}\n${seperator}\n\n${body}`
 		}
 
 		// Apply
 		// @set({parser,header,body,content,source})
 		// ^ commented out as we probably don't need to do this, it could be handled on the next load
-		opts.content = source;
+		opts.content = source
 
 		// Write data
-		super.writeSource(opts, next);
+		super.writeSource(opts, next)
 
 		// Chain
-		return this;
+		return this
 	}
 }
 DocumentModel.initClass();
-
-
-// =====================================
-// Export
-module.exports = DocumentModel;

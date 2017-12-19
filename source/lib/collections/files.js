@@ -39,21 +39,22 @@ import {FileModel} from '../models/file'
  * @extends QueryCollection
  */
 export class FilesCollection extends QueryCollection {
-	static initClass () {
+	constructor () {
+		super()
 
 		/**
 		 * Base Model for all items in this collection
 		 * @private
 		 * @property {Object} model
 		 */
-		this.prototype.model = FileModel
+		this.model = FileModel
 
 		/**
 		 * Base Collection for all child collections
 		 * @private
 		 * @property {Object} collection
 		 */
-		this.prototype.collection = FilesCollection
+		this.collection = FilesCollection
 	}
 
 	/**
@@ -64,10 +65,7 @@ export class FilesCollection extends QueryCollection {
 	 * @param {Object} [opts={}]
 	 * @returns {null}
 	 */
-	initialize (attrs, opts) {
-		if (opts == null) {
-			opts = {}
-		}
+	initialize (attrs, opts = {}) {
 		if (this.options == null) {
 			this.options = {}
 		}
@@ -99,7 +97,7 @@ export class FilesCollection extends QueryCollection {
 		]
 
 		// Try the queries
-		for (const query of Array.from(queries)) {
+		for (const query of queries) {
 			const file = this.findOne(query, sorting, paging)
 			if (file) {
 				return file
@@ -110,4 +108,3 @@ export class FilesCollection extends QueryCollection {
 		return null
 	}
 }
-FilesCollection.initClass()

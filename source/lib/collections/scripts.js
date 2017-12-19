@@ -34,11 +34,8 @@ export class ScriptsCollection extends ElementsCollection {
 	 * @param {Object} opts
 	 * @returns {null}
 	 */
-	add (values, opts) {
+	add (values, opts = {}) {
 		// Prepare
-		if (!opts) {
-			opts = {}
-		}
 		if (opts.defer == null) {
 			opts.defer = true
 		}
